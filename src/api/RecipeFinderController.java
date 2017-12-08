@@ -21,6 +21,7 @@ import java.util.ArrayList;
  */
 public class RecipeFinderController {
 
+    private generateMenu myMenu;
 
     @FXML
     private BorderPane borderPane;
@@ -113,6 +114,13 @@ public class RecipeFinderController {
     @FXML
     private void generateMenu(){
         System.out.println("Generate menu pressed!");
+        myMenu = new generateMenu();
+        for(int i = 0; i<recipes.size(); i++){
+            if(recipes.get(i).isCheckBoxChecked()) {
+                //System.out.println("User selected: " + recipes.get(i).getRecipeTitle() +"\nFood ID: " +recipes.get(i).getRecipeID() +"\nURL: " + recipes.get(i).getRecipeURL());
+                myMenu.addItem(recipes.get(i).getRecipeTitle());
+            }
+        }
     }
 
     /**

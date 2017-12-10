@@ -15,5 +15,6 @@
 
         <!--<mapping class="database.User"></mapping>-->
         <!--<mapping class="database.Inventory"></mapping>-->
+        <!--<mapping class="database.Recipe"></mapping>-->
     </session-factory>
 </hibernate-configuration>

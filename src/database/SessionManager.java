@@ -75,7 +75,8 @@ public class SessionManager {
                 .setProperty("hibernate.connection.username", properties.getProperty("hibernate.connection.username"))
                 .setProperty("hibernate.connection.password", properties.getProperty("hibernate.connection.password"))
                 .addAnnotatedClass(User.class)
-                .addAnnotatedClass(Inventory.class);
+                .addAnnotatedClass(Inventory.class)
+                .addAnnotatedClass(Recipe.class);
 
         return configuration;
     }

@@ -1,6 +1,7 @@
 package gui;
 
 import database.Inventory;
+import database.InventoryTransaction;
 import database.SessionManager;
 
 import java.awt.Dimension;
@@ -25,6 +26,7 @@ import javax.swing.*;
  */
 public class App extends JFrame {
     private SessionManager manager = null;
+    private InventoryTransaction inventoryTransaction = null;
 
     public static void main(String[] args) {
         App app = new App();
@@ -38,6 +40,7 @@ public class App extends JFrame {
         try {
             manager = new SessionManager();
             manager.setup();
+            inventoryTransaction = new InventoryTransaction(manager);
             addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
                     manager.exit();
@@ -120,7 +123,7 @@ public class App extends JFrame {
 
                     try {
                         long id = Long.parseLong(idStr);
-                        Inventory inventory = manager.read(id);
+                        Inventory inventory = inventoryTransaction.read(id);
 
                         if(inventory != null) {
                             textarea.setText("Item found:\n\n" + inventory.toString());
@@ -141,7 +144,7 @@ public class App extends JFrame {
 
                     try {
                         int quantity = Integer.parseInt(quantityStr);
-                        Inventory inventory = manager.create(new Inventory(nameStr, quantity));
+                        Inventory inventory = inventoryTransaction.create(new Inventory(nameStr, quantity));
                         textarea.setText("Item created:\n\n" + inventory.toString());
                     }catch (Exception err) {
                         textarea.setText("Failed to create item.");
@@ -159,7 +162,7 @@ public class App extends JFrame {
                     try {
                         long id = Long.parseLong(idStr);
                         int quantity = Integer.parseInt(quantityStr);
-                        Inventory inventory = manager.update(new Inventory(id, nameStr, quantity));
+                        Inventory inventory = inventoryTransaction.update(new Inventory(id, nameStr, quantity));
 
                         if(inventory != null) {
                             textarea.setText("Item updated:\n\n" + inventory.toString());
@@ -178,7 +181,7 @@ public class App extends JFrame {
 
                     try {
                         long id = Long.parseLong(idStr);
-                        Inventory inventory = manager.delete(id);
+                        Inventory inventory = inventoryTransaction.delete(id);
 
                         if(inventory != null) {
                             textarea.setText("Item deleted:\n\n" + inventory.toString());
@@ -194,7 +197,7 @@ public class App extends JFrame {
 
             listButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    List<Inventory> inventories = manager.list();
+                    List<Inventory> inventories = inventoryTransaction.list();
 
                     if(!inventories.isEmpty()) {
                         String result = "Current Items:\n\n";

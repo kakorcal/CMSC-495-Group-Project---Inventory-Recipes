@@ -1,5 +1,8 @@
 package database;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 
 /**
@@ -12,7 +15,7 @@ import javax.persistence.*;
  */
 
 @Entity
-@Table(name = "inventory") // maps fields to mysql table columns
+@Table(name = "Inventory") // maps fields to mysql table columns
 public class Inventory {
 
     @Id
@@ -25,6 +28,11 @@ public class Inventory {
 
     @Column(name = "quantity")
     private int quantity;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @OnDelete(action= OnDeleteAction.CASCADE)
+    private User user;
 
     // default constructor
     public Inventory() {
@@ -69,6 +77,10 @@ public class Inventory {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
+
+    public User getUser() { return user; }
+
+    public void setUser(User user) { this.user = user; }
 
     public String toString() {
         String id = "Id: " + this.getId();

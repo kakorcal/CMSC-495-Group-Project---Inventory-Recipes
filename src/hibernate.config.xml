@@ -13,6 +13,7 @@
         <property name="hibernate.show_sql">true</property>
         <property name="dialect">org.hibernate.dialect.MySQLDialect</property>
 
-        <mapping class="database.Inventory"></mapping>
+        <!--<mapping class="database.User"></mapping>-->
+        <!--<mapping class="database.Inventory"></mapping>-->
     </session-factory>
 </hibernate-configuration>

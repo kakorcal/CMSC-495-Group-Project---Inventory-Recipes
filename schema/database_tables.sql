@@ -1,7 +1,8 @@
 -- Straightforward table for user. We can make it more complex by adding password hashing if we have time.
 -- SERIAL DEFAULT VALUE means the id is required and will auto increment without passing the id as a param.
--- methods: create, read, delete
+-- methods: create (signup), read (login), delete
 -- additional constraints: each user must have a unique username
+-- note: for simplicity, we will require user to login everytime the app initializes
 CREATE TABLE User (
   id int SERIAL DEFAULT VALUE,
   username varchar(60) NOT NULL UNIQUE,

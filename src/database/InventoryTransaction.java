@@ -10,8 +10,10 @@ import java.util.List;
 
 public class InventoryTransaction {
     private SessionFactory sessionFactory;
+    private User user;
 
-    public InventoryTransaction(SessionManager manager) {
+    public InventoryTransaction(User user, SessionManager manager) {
+        this.user = user;
         this.sessionFactory = manager.getSessionFactory();
     }
 
@@ -21,6 +23,7 @@ public class InventoryTransaction {
 
         try {
             transaction = session.beginTransaction();
+            inventory.setUser(user);
             session.save(inventory);
             transaction.commit();
             System.out.println("Inventory created: ");
@@ -45,6 +48,7 @@ public class InventoryTransaction {
 
         try {
             transaction = session.beginTransaction();
+
             inventory = session.get(Inventory.class, id);
 
             if(inventory != null) {

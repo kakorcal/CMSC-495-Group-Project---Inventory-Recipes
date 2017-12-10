@@ -40,7 +40,6 @@ public class App extends JFrame {
         try {
             manager = new SessionManager();
             manager.setup();
-            inventoryTransaction = new InventoryTransaction(manager);
             addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
                     manager.exit();
@@ -72,6 +71,7 @@ public class App extends JFrame {
         private JButton updateButton = new JButton("Update");
         private JButton deleteButton = new JButton("Delete");
         private JButton listButton = new JButton("List All");
+        private JButton testButton = new JButton("Test");
 
         private JLabel idLabel = new JLabel("Id: ");
         private JTextField idField = new JTextField(10);
@@ -104,6 +104,7 @@ public class App extends JFrame {
             buttonsPanel.add(updateButton);
             buttonsPanel.add(deleteButton);
             buttonsPanel.add(listButton);
+            buttonsPanel.add(testButton);
 
             /*
              * Textarea
@@ -210,6 +211,12 @@ public class App extends JFrame {
                     }else {
                         textarea.setText("No items found.");
                     }
+                }
+            });
+
+            testButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("Test button clicked.");
                 }
             });
 

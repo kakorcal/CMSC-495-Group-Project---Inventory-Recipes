@@ -149,7 +149,7 @@ public class RecipeTransaction {
 
         try {
             transaction = session.beginTransaction();
-            Query<Recipe> query = session.createQuery("FROM Recipe I WHERE I.user.id = :user_id", Recipe.class);
+            Query<Recipe> query = session.createQuery("FROM Recipe R WHERE R.user.id = :user_id", Recipe.class);
             query.setParameter("user_id", user.getId());
             list = query.list();
 

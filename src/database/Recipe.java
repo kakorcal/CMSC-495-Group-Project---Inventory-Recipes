@@ -43,7 +43,7 @@ public class Recipe {
 
     // for updating inventory
     public Recipe(long id, String title, String sourceUrl, String imageUrl) {
-        System.out.println("Hibernate calling updating inventory constructor.");
+        System.out.println("Hibernate calling updating recipe constructor.");
         this.id = id;
         this.title = title;
         this.sourceUrl = sourceUrl;

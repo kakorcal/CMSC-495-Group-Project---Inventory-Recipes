@@ -12,7 +12,7 @@ CREATE TABLE User (
 -- This means that in order to create an inventory, the user must be created first.
 -- ON DELETE CASCADE means that if the user is deleted, the inventory associated to the user is also deleted.
 -- methods: create, read, update, delete, list
--- additional constraints: users cannot have duplicate inventory names
+-- additional constraints: users cannot have duplicate inventory names (need to select where user_id=id and name=arg_name)
 CREATE TABLE Inventory (
   id int SERIAL DEFAULT VALUE,
   name varchar(60) NOT NULL,

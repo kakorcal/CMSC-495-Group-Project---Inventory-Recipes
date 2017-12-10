@@ -1,10 +1,6 @@
 package database;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Name: Kenneth Korcal
@@ -18,8 +14,16 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "inventory") // maps fields to mysql table columns
 public class Inventory {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // specifies that id is a primary key
+    @Column(name = "id")
     private long id;
+
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "quantity")
     private int quantity;
 
     // default constructor
@@ -42,8 +46,6 @@ public class Inventory {
         this.quantity = quantity;
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // specifies that id is a primary key
     public long getId() {
         return id;
     }

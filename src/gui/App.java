@@ -1,7 +1,7 @@
 package gui;
 
 import database.Inventory;
-import database.InventoryManager;
+import database.SessionManager;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -24,7 +24,7 @@ import javax.swing.*;
  *
  */
 public class App extends JFrame {
-    private InventoryManager manager = null;
+    private SessionManager manager = null;
 
     public static void main(String[] args) {
         App app = new App();
@@ -36,8 +36,8 @@ public class App extends JFrame {
         setFrame();
 
         try {
-            manager = new InventoryManager();
-            manager.setUp();
+            manager = new SessionManager();
+            manager.setup();
             addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
                     manager.exit();
@@ -127,7 +127,7 @@ public class App extends JFrame {
                         }else {
                             textarea.setText("Item not found");
                         }
-                    }catch (NumberFormatException err) {
+                    }catch (Exception err) {
                         textarea.setText("Item not found.");
                     }
 
@@ -143,7 +143,7 @@ public class App extends JFrame {
                         int quantity = Integer.parseInt(quantityStr);
                         Inventory inventory = manager.create(new Inventory(nameStr, quantity));
                         textarea.setText("Item created:\n\n" + inventory.toString());
-                    }catch (NumberFormatException err) {
+                    }catch (Exception err) {
                         textarea.setText("Failed to create item.");
                     }
 
@@ -166,7 +166,7 @@ public class App extends JFrame {
                         }else {
                             textarea.setText("Failed to update item.");
                         }
-                    }catch (NumberFormatException err) {
+                    }catch (Exception err) {
                         textarea.setText("Item not found.");
                     }
                 }
@@ -185,7 +185,7 @@ public class App extends JFrame {
                         }else {
                             textarea.setText("Failed to delete item.");
                         }
-                    }catch (NumberFormatException err) {
+                    }catch (Exception err) {
                         textarea.setText("Item not found.");
                     }
 

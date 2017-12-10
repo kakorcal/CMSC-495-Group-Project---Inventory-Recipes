@@ -12,7 +12,7 @@ public class InventoryTransaction {
     private SessionFactory sessionFactory;
     private User user;
 
-    public InventoryTransaction(User user, SessionManager manager) {
+    public InventoryTransaction(SessionManager manager, User user) {
         this.user = user;
         this.sessionFactory = manager.getSessionFactory();
     }
@@ -51,11 +51,12 @@ public class InventoryTransaction {
 
             inventory = session.get(Inventory.class, id);
 
-            if(inventory != null) {
+            if(inventory != null && inventory.getUser().getId() == user.getId()) {
                 System.out.println("Inventory found: ");
                 System.out.println(inventory.toString());
             }else {
                 System.out.println("Inventory id: " + id + " does not exist");
+                inventory = null;
             }
 
             transaction.commit();
@@ -82,7 +83,7 @@ public class InventoryTransaction {
             long id = inventory.getId();
             newInventory = session.get(Inventory.class, id);
 
-            if(newInventory != null) {
+            if(newInventory != null && newInventory.getUser().getId() == user.getId()) {
                 newInventory.setName(inventory.getName());
                 newInventory.setQuantity(inventory.getQuantity());
                 session.update(newInventory);
@@ -90,6 +91,7 @@ public class InventoryTransaction {
                 System.out.println(newInventory.toString());
             }else {
                 System.out.println("Inventory id: " + id + " does not exist");
+                newInventory = null;
             }
 
             transaction.commit();
@@ -116,12 +118,13 @@ public class InventoryTransaction {
 
             inventory = session.get(Inventory.class, id);
 
-            if(inventory != null) {
+            if(inventory != null && inventory.getUser().getId() == user.getId()) {
                 session.delete(inventory);
                 System.out.println("Inventory deleted: ");
                 System.out.println(inventory.toString());
             }else {
                 System.out.println("Inventory id: " + id + " does not exist");
+                inventory = null;
             }
 
             transaction.commit();
@@ -145,7 +148,8 @@ public class InventoryTransaction {
 
         try {
             transaction = session.beginTransaction();
-            Query<Inventory> query = session.createQuery("from Inventory", Inventory.class);
+            Query<Inventory> query = session.createQuery("FROM Inventory I WHERE I.user.id = :user_id", Inventory.class);
+            query.setParameter("user_id", user.getId());
             list = query.list();
 
             for(Inventory item: list) {

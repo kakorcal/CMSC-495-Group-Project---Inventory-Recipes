@@ -1,8 +1,6 @@
 package gui;
 
-import database.Inventory;
-import database.InventoryTransaction;
-import database.SessionManager;
+import database.*;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -26,6 +24,8 @@ import javax.swing.*;
  */
 public class App extends JFrame {
     private SessionManager manager = null;
+    private User user = null;
+    private UserTransaction userTransaction = null;
     private InventoryTransaction inventoryTransaction = null;
 
     public static void main(String[] args) {
@@ -217,6 +217,33 @@ public class App extends JFrame {
             testButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     System.out.println("Test button clicked.");
+                    userTransaction = new UserTransaction(manager);
+                    User u1;
+
+                    try {
+                        u1 = userTransaction.login("foo4", "bar");
+
+                        if(u1 == null) {
+                            textarea.setText("Invalid credentials.");
+                            return;
+                        }
+                    }catch (Exception err) {
+                        textarea.setText("Failed to login.");
+                        return;
+                    }
+
+                    userTransaction.delete(u1.getId());
+
+                    //inventoryTransaction = new InventoryTransaction(manager, u1);
+//                    Inventory i1;
+//
+//                    try {
+//                        i1 = inventoryTransaction.create(new Inventory("kale", 3));
+//                        textarea.setText(i1.toString());
+//                    }catch (Exception err) {
+//                        textarea.setText("failed to create inventory for user ");
+//                    }
+
                 }
             });
 

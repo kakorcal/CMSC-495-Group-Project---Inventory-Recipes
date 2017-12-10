@@ -86,6 +86,7 @@ public class Inventory {
         String id = "Id: " + this.getId();
         String name = "Name: " + this.getName();
         String quantity = "Quantity: " + this.getQuantity();
-        return id + "\n" + name + "\n" + quantity;
+        String userId = "User Id: " + this.getUser().getId();
+        return id + "\n" + name + "\n" + quantity + "\n" + userId;
     }
 }

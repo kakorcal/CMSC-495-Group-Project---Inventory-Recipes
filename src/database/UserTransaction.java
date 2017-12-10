@@ -15,19 +15,18 @@ public class UserTransaction {
         this.sessionFactory = manager.getSessionFactory();
     }
 
-    public long signup(String username, String password) throws HibernateException {
+    public User signup(String username, String password) throws HibernateException {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
-        long id;
+        User user;
 
         try {
             transaction = session.beginTransaction();
-            User user = new User();
+            user = new User();
             user.setUsername(username);
             user.setPassword(password);
             session.save(user);
             transaction.commit();
-            id = user.getId();
             System.out.println("User created: ");
             System.out.println(user.toString());
         }catch (HibernateException e) {
@@ -40,10 +39,11 @@ public class UserTransaction {
             session.close();
         }
 
-        return id;
+        user.setPassword(null);
+        return user;
     }
 
-    public long login(String username, String password) throws HibernateException {
+    public User login(String username, String password) throws HibernateException {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
 
@@ -58,16 +58,17 @@ public class UserTransaction {
             // throw error if username does not exist
             if(results.isEmpty()) {
                 System.out.println("Username: " + username + " does not exist.");
-                return -1;
+                return null;
             }else {
                 // throw error if password is incorrect
                 User user = (User) results.get(0);
                 if(!password.equals(user.getPassword())) {
                     System.out.println("Incorrect password.");
-                    return -1;
+                    return null;
                 }else {
                     System.out.println("Login successful");
-                    return user.getId();
+                    user.setPassword(null);
+                    return user;
                 }
             }
         }catch(HibernateException e) {

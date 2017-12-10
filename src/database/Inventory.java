@@ -23,18 +23,20 @@ public class Inventory {
     private int quantity;
 
     // default constructor
-    public Inventory() {}
+    public Inventory() {
+        System.out.println("Hibernate calling default inventory constructor.");
+    }
 
     // for creating new inventory
     public Inventory(String name, int quantity) {
-        super();
+        System.out.println("Hibernate calling new inventory constructor.");
         this.name = name;
         this.quantity = quantity;
     }
 
     // for updating inventory
     public Inventory(long id, String name, int quantity) {
-        super();
+        System.out.println("Hibernate calling updating inventory constructor.");
         this.id = id;
         this.name = name;
         this.quantity = quantity;

@@ -87,6 +87,7 @@ public class RecipeTransaction {
                 newRecipe.setTitle(recipe.getTitle());
                 newRecipe.setSourceUrl(recipe.getSourceUrl());
                 newRecipe.setImageUrl(recipe.getImageUrl());
+                newRecipe.setPrice(recipe.getPrice());
                 session.update(newRecipe);
                 System.out.println("Recipe updated: ");
                 System.out.println(newRecipe.toString());

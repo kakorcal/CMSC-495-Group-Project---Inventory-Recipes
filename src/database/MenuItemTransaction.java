@@ -79,39 +79,39 @@ public class MenuItemTransaction {
         return menuItem;
     }
 
-    public MenuItem update(MenuItem menuItem, Menu menu) throws HibernateException {
-        Session session = sessionFactory.openSession();
-        Transaction transaction = null;
-        MenuItem newMenuItem;
-
-        try {
-            transaction = session.beginTransaction();
-            long id = menuItem.getId();
-            newMenuItem = session.get(MenuItem.class, id);
-
-            if(newMenuItem != null && newMenuItem.getMenu().getId() == menu.getId()) {
-                newMenuItem.setPrice(menuItem.getPrice());
-                session.update(newMenuItem);
-                System.out.println("Menu Item updated: ");
-                System.out.println(newMenuItem.toString());
-            }else {
-                System.out.println("Menu item id: " + id + " does not exist");
-                newMenuItem = null;
-            }
-
-            transaction.commit();
-        }catch (HibernateException e){
-            if(transaction != null) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-            throw new HibernateException(e);
-        }finally {
-            session.close();
-        }
-
-        return newMenuItem;
-    }
+//    public MenuItem update(MenuItem menuItem, Menu menu) throws HibernateException {
+//        Session session = sessionFactory.openSession();
+//        Transaction transaction = null;
+//        MenuItem newMenuItem;
+//
+//        try {
+//            transaction = session.beginTransaction();
+//            long id = menuItem.getId();
+//            newMenuItem = session.get(MenuItem.class, id);
+//
+//            if(newMenuItem != null && newMenuItem.getMenu().getId() == menu.getId()) {
+//                newMenuItem.setPrice(menuItem.getPrice());
+//                session.update(newMenuItem);
+//                System.out.println("Menu Item updated: ");
+//                System.out.println(newMenuItem.toString());
+//            }else {
+//                System.out.println("Menu item id: " + id + " does not exist");
+//                newMenuItem = null;
+//            }
+//
+//            transaction.commit();
+//        }catch (HibernateException e){
+//            if(transaction != null) {
+//                transaction.rollback();
+//            }
+//            e.printStackTrace();
+//            throw new HibernateException(e);
+//        }finally {
+//            session.close();
+//        }
+//
+//        return newMenuItem;
+//    }
 
     public MenuItem delete(long id, Menu menu) throws HibernateException {
         Session session = sessionFactory.openSession();

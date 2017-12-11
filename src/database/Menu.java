@@ -26,13 +26,13 @@ public class Menu {
         System.out.println("Hibernate calling default menu constructor.");
     }
 
-    // for creating new inventory
+    // for creating new menu
     public Menu(String name) {
         System.out.println("Hibernate calling new menu constructor.");
         this.name = name;
     }
 
-    // for updating inventory
+    // for updating menu
     public Menu(long id, String name) {
         System.out.println("Hibernate calling updating menu constructor.");
         this.id = id;

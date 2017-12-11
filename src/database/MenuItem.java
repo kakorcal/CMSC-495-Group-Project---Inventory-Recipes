@@ -13,9 +13,6 @@ public class MenuItem {
     @Column(name = "id")
     private long id;
 
-    @Column(name = "price")
-    private double price;
-
     @ManyToOne
     @JoinColumn(name = "menu_id")
     @OnDelete(action= OnDeleteAction.CASCADE)
@@ -31,18 +28,18 @@ public class MenuItem {
         System.out.println("Hibernate calling default menu item constructor.");
     }
 
-    // for creating new inventory
-    public MenuItem(Double price) {
-        System.out.println("Hibernate calling new menu item constructor.");
-        this.price = price;
-    }
-
-    // for updating inventory
-    public MenuItem(long id, Double price) {
-        System.out.println("Hibernate calling updating menu item constructor.");
-        this.id = id;
-        this.price = price;
-    }
+//    // for creating new menu item
+//    public MenuItem(Double price) {
+//        System.out.println("Hibernate calling new menu item constructor.");
+//        this.price = price;
+//    }
+//
+//    // for updating menu item
+//    public MenuItem(long id, Double price) {
+//        System.out.println("Hibernate calling updating menu item constructor.");
+//        this.id = id;
+//        this.price = price;
+//    }
 
     public long getId() {
         return id;
@@ -50,14 +47,6 @@ public class MenuItem {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
     }
 
     public Menu getMenu() {
@@ -79,7 +68,7 @@ public class MenuItem {
     public String toString() {
         String id = "Id: " + this.getId();
         String title = "Recipe: " + this.getRecipe().getTitle();
-        String price = "Price: " + this.getPrice();
+        String price = "Price: " + this.getRecipe().getPrice();
         String menuId = "Menu Id: " + this.getMenu().getId();
         String recipeId = "Recipe Id: " + this.getRecipe().getId();
         String userId = "User Id: " + this.getMenu().getUser().getId();

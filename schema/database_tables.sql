@@ -30,6 +30,7 @@ CREATE TABLE Recipe (
   title text NOT NULL,
   source_url text,
   image_url text,
+  price double UNSIGNED,
   user_id int NOT NULL,
   FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE CASCADE
 );
@@ -48,7 +49,6 @@ CREATE TABLE Menu (
 -- methods: create, read, update, delete
 CREATE TABLE MenuItem (
   id int SERIAL DEFAULT VALUE,
-  price double UNSIGNED,
   menu_id int NOT NULL,
   recipe_id int NOT NULL,
   FOREIGN KEY (menu_id) REFERENCES Menu(id) ON DELETE CASCADE,

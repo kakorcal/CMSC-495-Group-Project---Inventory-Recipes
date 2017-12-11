@@ -17,15 +17,12 @@ public class MenuItemTransaction {
      * */
 
     private SessionFactory sessionFactory;
-    private Menu menu;
-    private Recipe recipe;
-
-    public MenuItemTransaction(SessionManager manager, Menu menu) {
-        this.menu = menu;
+    
+    public MenuItemTransaction(SessionManager manager) {
         this.sessionFactory = manager.getSessionFactory();
     }
 
-    public MenuItem create(MenuItem menuItem) throws HibernateException {
+    public MenuItem create(MenuItem menuItem, Menu menu, Recipe recipe) throws HibernateException {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
 
@@ -50,7 +47,7 @@ public class MenuItemTransaction {
         return menuItem;
     }
 
-    public MenuItem read(long id) throws HibernateException {
+    public MenuItem read(long id, Menu menu) throws HibernateException {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
         MenuItem menuItem;
@@ -82,7 +79,7 @@ public class MenuItemTransaction {
         return menuItem;
     }
 
-    public MenuItem update(MenuItem menuItem) throws HibernateException {
+    public MenuItem update(MenuItem menuItem, Menu menu) throws HibernateException {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
         MenuItem newMenuItem;
@@ -116,7 +113,7 @@ public class MenuItemTransaction {
         return newMenuItem;
     }
 
-    public MenuItem delete(long id) throws HibernateException {
+    public MenuItem delete(long id, Menu menu) throws HibernateException {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
         MenuItem menuItem;
@@ -149,7 +146,7 @@ public class MenuItemTransaction {
         return menuItem;
     }
 
-    public List<MenuItem> list() throws HibernateException {
+    public List<MenuItem> list(Menu menu) throws HibernateException {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
         List<MenuItem> list;
@@ -178,19 +175,19 @@ public class MenuItemTransaction {
         return list;
     }
 
-    public Menu getMenu() {
-        return menu;
-    }
-
-    public void setMenu(Menu menu) {
-        this.menu = menu;
-    }
-
-    public Recipe getRecipe() {
-        return recipe;
-    }
-
-    public void setRecipe(Recipe recipe) {
-        this.recipe = recipe;
-    }
+//    public Menu getMenu() {
+//        return menu;
+//    }
+//
+//    public void setMenu(Menu menu) {
+//        this.menu = menu;
+//    }
+//
+//    public Recipe getRecipe() {
+//        return recipe;
+//    }
+//
+//    public void setRecipe(Recipe recipe) {
+//        this.recipe = recipe;
+//    }
 }

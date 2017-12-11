@@ -11,8 +11,12 @@
         <property name="hibernate.connection.password"></property>
 
         <property name="hibernate.show_sql">true</property>
+        <property name="dialect">org.hibernate.dialect.MySQLDialect</property>
 
-        <!--TODO: find out why the mapping does not work when using service registry-->
-        <!--<mapping class="database.Inventory" />-->
+        <!--<mapping class="database.User"></mapping>-->
+        <!--<mapping class="database.Inventory"></mapping>-->
+        <!--<mapping class="database.Recipe"></mapping>-->
+        <!--<mapping class="database.Menu"></mapping>-->
+        <!--<mapping class="database.MenuItem"></mapping>-->
     </session-factory>
 </hibernate-configuration>

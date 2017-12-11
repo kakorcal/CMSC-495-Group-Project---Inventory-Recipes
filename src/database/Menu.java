@@ -5,19 +5,9 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
-/**
- * Name: Kenneth Korcal
- * Date: 12/03/2017
- * Description:
- *
- * Inventory definition. Maps MySQL table to Java object
- *
- */
-
 @Entity
-@Table(name = "Inventory") // maps fields to mysql table columns
-public class Inventory {
-
+@Table(name = "Menu") // maps fields to mysql table columns
+public class Menu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // specifies that id is a primary key
     @Column(name = "id")
@@ -26,32 +16,27 @@ public class Inventory {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "quantity")
-    private int quantity;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     @OnDelete(action= OnDeleteAction.CASCADE)
     private User user;
 
     // default constructor
-    public Inventory() {
-        System.out.println("Hibernate calling default inventory constructor.");
+    public Menu() {
+        System.out.println("Hibernate calling default menu constructor.");
     }
 
-    // for creating new inventory
-    public Inventory(String name, int quantity) {
-        System.out.println("Hibernate calling new inventory constructor.");
+    // for creating new menu
+    public Menu(String name) {
+        System.out.println("Hibernate calling new menu constructor.");
         this.name = name;
-        this.quantity = quantity;
     }
 
-    // for updating inventory
-    public Inventory(long id, String name, int quantity) {
-        System.out.println("Hibernate calling updating inventory constructor.");
+    // for updating menu
+    public Menu(long id, String name) {
+        System.out.println("Hibernate calling updating menu constructor.");
         this.id = id;
         this.name = name;
-        this.quantity = quantity;
     }
 
     public long getId() {
@@ -70,14 +55,6 @@ public class Inventory {
         this.name = name;
     }
 
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
     public User getUser() { return user; }
 
     public void setUser(User user) { this.user = user; }
@@ -85,8 +62,7 @@ public class Inventory {
     public String toString() {
         String id = "Id: " + this.getId();
         String name = "Name: " + this.getName();
-        String quantity = "Quantity: " + this.getQuantity();
         String userId = "User Id: " + this.getUser().getId();
-        return id + "\n" + name + "\n" + quantity + "\n" + userId;
+        return id + "\n" + name + "\n" + userId;
     }
 }

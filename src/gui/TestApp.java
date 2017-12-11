@@ -1,7 +1,6 @@
 package gui;
 
-import database.Inventory;
-import database.InventoryManager;
+import database.*;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -23,21 +22,27 @@ import javax.swing.*;
  * GUI for applying Create, Read, Update, Delete, and List operations on Inventory table
  *
  */
-public class App extends JFrame {
-    private InventoryManager manager = null;
+public class TestApp extends JFrame {
+    private SessionManager manager = null;
+    private User user = null;
+    private UserTransaction userTransaction = null;
+    private InventoryTransaction inventoryTransaction = null;
+    private RecipeTransaction recipeTransaction = null;
+    private MenuTransaction menuTransaction = null;
+    private MenuItemTransaction menuItemTransaction = null;
 
     public static void main(String[] args) {
-        App app = new App();
+        TestApp app = new TestApp();
         app.display();
     }
 
-    public App() {
+    public TestApp() {
         super("Inventory Manager");
         setFrame();
 
         try {
-            manager = new InventoryManager();
-            manager.setUp();
+            manager = new SessionManager();
+            manager.setup();
             addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
                     manager.exit();
@@ -69,6 +74,7 @@ public class App extends JFrame {
         private JButton updateButton = new JButton("Update");
         private JButton deleteButton = new JButton("Delete");
         private JButton listButton = new JButton("List All");
+        private JButton testButton = new JButton("Test");
 
         private JLabel idLabel = new JLabel("Id: ");
         private JTextField idField = new JTextField(10);
@@ -101,6 +107,7 @@ public class App extends JFrame {
             buttonsPanel.add(updateButton);
             buttonsPanel.add(deleteButton);
             buttonsPanel.add(listButton);
+            buttonsPanel.add(testButton);
 
             /*
              * Textarea
@@ -120,14 +127,14 @@ public class App extends JFrame {
 
                     try {
                         long id = Long.parseLong(idStr);
-                        Inventory inventory = manager.read(id);
+                        Inventory inventory = inventoryTransaction.read(id);
 
                         if(inventory != null) {
                             textarea.setText("Item found:\n\n" + inventory.toString());
                         }else {
                             textarea.setText("Item not found");
                         }
-                    }catch (NumberFormatException err) {
+                    }catch (Exception err) {
                         textarea.setText("Item not found.");
                     }
 
@@ -141,9 +148,9 @@ public class App extends JFrame {
 
                     try {
                         int quantity = Integer.parseInt(quantityStr);
-                        Inventory inventory = manager.create(new Inventory(nameStr, quantity));
+                        Inventory inventory = inventoryTransaction.create(new Inventory(nameStr, quantity));
                         textarea.setText("Item created:\n\n" + inventory.toString());
-                    }catch (NumberFormatException err) {
+                    }catch (Exception err) {
                         textarea.setText("Failed to create item.");
                     }
 
@@ -159,14 +166,14 @@ public class App extends JFrame {
                     try {
                         long id = Long.parseLong(idStr);
                         int quantity = Integer.parseInt(quantityStr);
-                        Inventory inventory = manager.update(new Inventory(id, nameStr, quantity));
+                        Inventory inventory = inventoryTransaction.update(new Inventory(id, nameStr, quantity));
 
                         if(inventory != null) {
                             textarea.setText("Item updated:\n\n" + inventory.toString());
                         }else {
                             textarea.setText("Failed to update item.");
                         }
-                    }catch (NumberFormatException err) {
+                    }catch (Exception err) {
                         textarea.setText("Item not found.");
                     }
                 }
@@ -178,14 +185,14 @@ public class App extends JFrame {
 
                     try {
                         long id = Long.parseLong(idStr);
-                        Inventory inventory = manager.delete(id);
+                        Inventory inventory = inventoryTransaction.delete(id);
 
                         if(inventory != null) {
                             textarea.setText("Item deleted:\n\n" + inventory.toString());
                         }else {
                             textarea.setText("Failed to delete item.");
                         }
-                    }catch (NumberFormatException err) {
+                    }catch (Exception err) {
                         textarea.setText("Item not found.");
                     }
 
@@ -194,7 +201,7 @@ public class App extends JFrame {
 
             listButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    List<Inventory> inventories = manager.list();
+                    List<Inventory> inventories = inventoryTransaction.list();
 
                     if(!inventories.isEmpty()) {
                         String result = "Current Items:\n\n";
@@ -207,6 +214,57 @@ public class App extends JFrame {
                     }else {
                         textarea.setText("No items found.");
                     }
+                }
+            });
+
+            testButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("Test button clicked.");
+
+                    // testing signup
+                    userTransaction = new UserTransaction(manager);
+
+                    try {
+                        // this can be replaced with userTransaction.login as well. you will just have to change the error message.
+                        user = userTransaction.signup("test", "user");
+                        if(user == null) {
+                            textarea.setText("Invalid credentials.");
+                            return;
+                        }
+                    }catch (Exception err) {
+                        textarea.setText("Failed to login.");
+                        return;
+                    }
+
+                    // creating all transaction instances
+                    inventoryTransaction = new InventoryTransaction(manager, user);
+                    recipeTransaction = new RecipeTransaction(manager, user);
+                    menuTransaction = new MenuTransaction(manager, user);
+                    // menu item is dependent on menu and recipe when called the CRUDL methods
+                    menuItemTransaction = new MenuItemTransaction(manager);
+
+                    // doing some transactions
+
+                    // create inventory
+                    inventoryTransaction.create(new Inventory("Egg", 12));
+                    inventoryTransaction.create(new Inventory("Milk", 1));
+                    inventoryTransaction.list();
+
+                    // call api and retrieve recipe. pass that result into Recipe object
+                    recipeTransaction.create(new Recipe("Title1", "Source1", "Image1", 10.00));
+                    recipeTransaction.create(new Recipe("Title2", "Source2", "Image2", 20.00));
+                    recipeTransaction.create(new Recipe("Title3", "Source3", "Image3", 22.00));
+                    List<Recipe> recipes = recipeTransaction.list();
+
+                    // create a menu based on the recipe
+                    Menu menu1 = menuTransaction.create(new Menu("Menu1"));
+                    menuTransaction.list();
+
+                    // create the menu items
+                    for(Recipe recipe: recipes) {
+                        menuItemTransaction.create(new MenuItem(), menu1, recipe);
+                    }
+                    menuItemTransaction.list(menu1);
                 }
             });
 

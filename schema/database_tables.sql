@@ -30,7 +30,7 @@ CREATE TABLE Recipe (
   title text NOT NULL,
   source_url text,
   image_url text,
-  price double UNSIGNED,
+  price double UNSIGNED NOT NULL DEFAULT '0.00',
   user_id int NOT NULL,
   FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE CASCADE
 );

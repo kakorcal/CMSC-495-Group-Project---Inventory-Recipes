@@ -22,7 +22,6 @@ public class InventoryTransaction {
     public Inventory create(Inventory inventory) {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
-        List<Inventory> list;
         error.reset();
 
         // input validations
@@ -48,18 +47,19 @@ public class InventoryTransaction {
             Query<Inventory> query = session.createQuery("FROM Inventory I WHERE I.user.id = :user_id AND I.name = :inventory_name", Inventory.class);
             query.setParameter("user_id", user.getId());
             query.setParameter("inventory_name", inventory.getName());
-            list = query.list();
+            List<Inventory> list = query.list();
 
             if(!list.isEmpty()) {
-                error.setMessage("Inventory name must be unique.");
+                error.setMessage("Cannot have duplicate inventory names.");
                 return null;
-            }else {
-                inventory.setUser(user);
-                session.save(inventory);
-                transaction.commit();
-                System.out.println("Inventory created: ");
-                System.out.println(inventory.toString());
             }
+
+            inventory.setUser(user);
+            session.save(inventory);
+            transaction.commit();
+            System.out.println("Inventory created: ");
+            System.out.println(inventory.toString());
+
         }catch (HibernateException e) {
             if(transaction != null) {
                 transaction.rollback();
@@ -130,6 +130,8 @@ public class InventoryTransaction {
             return null;
         }
 
+        // TODO: tricky here. if we do this, we need to require user to include values that don't need to update
+        // for now, we will go with this for simplicity.
         if(inventory.getName().isEmpty()) {
             error.setMessage("Please enter an inventory name.");
             return null;

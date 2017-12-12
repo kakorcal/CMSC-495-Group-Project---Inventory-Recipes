@@ -10,3 +10,6 @@ https://stackoverflow.com/questions/38629890/jboss-hibernate-unable-to-locate-pe
 intellij
 https://stackoverflow.com/questions/1051640/correct-way-to-add-external-jars-lib-jar-to-an-intellij-idea-project
 https://stackoverflow.com/questions/7065402/how-to-add-external-library-in-intellij-idea
+
+bcrypt
+https://www.mindrot.org/projects/jBCrypt/

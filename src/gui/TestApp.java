@@ -19,7 +19,8 @@ import javax.swing.*;
  * Date: 12/03/2017
  * Description:
  *
- * GUI for applying Create, Read, Update, Delete, and List operations on Inventory table
+ * GUI for testing Create, Read, Update, Delete, and List operations on database tables
+ * This is NOT included in the actual Restaurant Management Application. This is for testing purposes only.
  *
  */
 public class TestApp extends JFrame {
@@ -37,7 +38,7 @@ public class TestApp extends JFrame {
     }
 
     public TestApp() {
-        super("Inventory Manager");
+        super("Restaurant Management Application");
         setFrame();
 
         try {

@@ -104,6 +104,7 @@ public class SessionManager {
     }
 
     public void exit() {
+        System.out.println("Closing hibernate session factory.");
         sessionFactory.close();
     }
 

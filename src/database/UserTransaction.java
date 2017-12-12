@@ -11,10 +11,12 @@ import java.util.List;
 
 public class UserTransaction {
     private SessionFactory sessionFactory;
+    private ErrorHandler error;
     private static final int SALT_WORK_FACTOR = 10;
 
     public UserTransaction(SessionManager manager) {
         this.sessionFactory = manager.getSessionFactory();
+        this.error = new ErrorHandler();
     }
 
     public User signup(String username, String password) throws HibernateException {
@@ -117,5 +119,13 @@ public class UserTransaction {
         }
 
         return user;
+    }
+
+    public ErrorHandler getError() {
+        return error;
+    }
+
+    public void setError(ErrorHandler error) {
+        this.error = error;
     }
 }

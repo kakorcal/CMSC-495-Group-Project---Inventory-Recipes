@@ -29,6 +29,7 @@ public class RestaurantApp extends Application {
         try {
             manager = new SessionManager();
             manager.setup();
+            instance.setSessionManager(manager);
 
             // signup / login form https://docs.oracle.com/javafx/2/get_started/fxml_tutorial.htm
             Parent root = FXMLLoader.load(getClass().getResource("authForm.fxml"));

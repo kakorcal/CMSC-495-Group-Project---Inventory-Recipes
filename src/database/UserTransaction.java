@@ -19,10 +19,21 @@ public class UserTransaction {
         this.error = new ErrorHandler();
     }
 
-    public User signup(String username, String password) throws HibernateException {
+    public User signup(String username, String password) {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
         User user;
+        error.reset();
+
+        if(username.length() < 5) {
+            error.setMessage("Username must contain at least 5 characters.");
+            return null;
+        }
+
+        if(password.length() < 5) {
+            error.setMessage("Username must contain at least 5 characters.");
+            return null;
+        }
 
         try {
             transaction = session.beginTransaction();
@@ -40,7 +51,8 @@ public class UserTransaction {
                 transaction.rollback();
             }
             e.printStackTrace();
-            throw new HibernateException(e);
+            error.setMessage("Username already exists.");
+            return null;
         }finally {
             session.close();
         }
@@ -49,9 +61,20 @@ public class UserTransaction {
         return user;
     }
 
-    public User login(String username, String password) throws HibernateException {
+    public User login(String username, String password) {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
+        error.reset();
+
+        if(username.length() < 5) {
+            error.setMessage("Username must contain at least 5 characters.");
+            return null;
+        }
+
+        if(password.length() < 5) {
+            error.setMessage("Username must contain at least 5 characters.");
+            return null;
+        }
 
         try {
             transaction = session.beginTransaction();
@@ -64,13 +87,15 @@ public class UserTransaction {
             // throw error if username does not exist
             if(results.isEmpty()) {
                 System.out.println("Username: " + username + " does not exist.");
+                error.setMessage("Username does not exist.");
                 return null;
             }else {
                 // throw error if password is incorrect
                 User user = (User) results.get(0);
 
                 if(!BCrypt.checkpw(password, user.getPassword())) {
-                    System.out.println("Incorrect password.");
+                    System.out.println("Incorrect password");
+                    error.setMessage("Incorrect password.");
                     return null;
                 }else {
                     System.out.println("Login successful");
@@ -83,16 +108,18 @@ public class UserTransaction {
                 transaction.rollback();
             }
             e.printStackTrace();
-            throw new HibernateException(e);
+            error.setMessage("Login failed. Please try again.");
+            return null;
         }finally {
             session.close();
         }
     }
 
-    public User delete(long id) throws HibernateException {
+    public User delete(long id) {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
         User user;
+        error.reset();
 
         try {
             transaction = session.beginTransaction();
@@ -105,6 +132,8 @@ public class UserTransaction {
                 System.out.println(user.toString());
             }else {
                 System.out.println("User id: " + id + " does not exist");
+                error.setMessage("User does not exist.");
+                return null;
             }
 
             transaction.commit();
@@ -113,7 +142,8 @@ public class UserTransaction {
                 transaction.rollback();
             }
             e.printStackTrace();
-            throw new HibernateException(e);
+            error.setMessage("Failed to delete user.");
+            return null;
         }finally {
             session.close();
         }

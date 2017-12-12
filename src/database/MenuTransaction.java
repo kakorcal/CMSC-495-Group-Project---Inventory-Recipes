@@ -135,8 +135,14 @@ public class MenuTransaction {
 
             if(newMenu != null && newMenu.getUser().getId() == user.getId()) {
 
-                if(newMenu.getName().equals(newMenu.getName())) {
-                    error.setMessage("Menu name must be unique.");
+                // check for dups
+                Query<Menu> query = session.createQuery("FROM Menu M WHERE M.user.id = :user_id AND M.name = :menu_name", Menu.class);
+                query.setParameter("user_id", user.getId());
+                query.setParameter("menu_name", menu.getName());
+                List<Menu> list = query.list();
+
+                if(!list.isEmpty()) {
+                    error.setMessage("Cannot have duplicate menu names.");
                     return null;
                 }
 

@@ -16,7 +16,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
 
-import javax.persistence.criteria.CriteriaDelete;
 import javax.swing.*;
 
 
@@ -260,6 +259,7 @@ public class TestApp extends JFrame {
                     }
 
                     testUser();
+                    testInventory();
                 }
             });
 
@@ -286,8 +286,8 @@ public class TestApp extends JFrame {
         * */
 
         private void resetTransactions() {
-            user = null;
-            userTransaction = null;
+//            user = null;
+//            userTransaction = null;
             inventoryTransaction = null;
             recipeTransaction = null;
             menuTransaction = null;
@@ -322,16 +322,16 @@ public class TestApp extends JFrame {
             if(userTransaction.getError().hasError()) {
                 addTestResult("Signup user", userTransaction.getError().getMessage(), false);
             }else {
-                addTestResult("Signup user", "\n" + user.toString(), true);
+                addTestResult("Signup user", "Id - " + user.getId() + " " + user.getUsername(), true);
             }
 
             // test user deletion (bad value)
             userTransaction.delete(-1);
 
             if(userTransaction.getError().hasError()) {
-                addTestResult("Delete user", userTransaction.getError().getMessage(), true);
+                addTestResult("Delete user (incorrect value)", userTransaction.getError().getMessage(), true);
             }else {
-                addTestResult("Delete user", "User deleted", false);
+                addTestResult("Delete user (incorrect value)", "User deleted", false);
             }
 
             // test user creation (with previous id)
@@ -350,7 +350,7 @@ public class TestApp extends JFrame {
             if(userTransaction.getError().hasError()) {
                 addTestResult("Delete user again", userTransaction.getError().getMessage(), false);
             }else {
-                addTestResult("Delete user again", user.toString(), true);
+                addTestResult("Delete user again", "Id - " + user.getId() + " " + user.getUsername(), true);
             }
 
             // login (bad password)
@@ -378,7 +378,7 @@ public class TestApp extends JFrame {
             if(userTransaction.getError().hasError()) {
                 addTestResult("Login success", userTransaction.getError().getMessage(), false);
             }else {
-                addTestResult("Login success", user.toString(), true);
+                addTestResult("Login success", "Id - " + user.getId() + " " + user.getUsername(), true);
             }
 
             // creating second user and adding dummy data
@@ -423,11 +423,55 @@ public class TestApp extends JFrame {
         // main thing is to ensure the methods work, no access to test1 user, and no duplicate names (exception if its other user)
         // user right now = test2. this is true for the rest of the tests as well.
         private void testInventory() {
-            // create inventory (bad input)
+            inventoryTransaction = new InventoryTransaction(manager, user);
 
             // create inventory (good input)
+            inventoryTransaction.create(new Inventory("Carrot", 3));
 
-            // update inventory (bad input)
+            if(inventoryTransaction.getError().hasError()) {
+                addTestResult("User 2 create inventory", inventoryTransaction.getError().getMessage(), false);
+            }else {
+                addTestResult("User 2 create inventory", "Successfully created inventory", true);
+            }
+
+            // adding bacon for update tests
+            inventoryTransaction.create(new Inventory("Bacon", 7));
+
+            // create inventory (duplicate)
+            inventoryTransaction.create(new Inventory("Carrot", 6));
+
+            if(inventoryTransaction.getError().hasError()) {
+                addTestResult("User 2 create inventory duplicate", inventoryTransaction.getError().getMessage(), true);
+            }else {
+                addTestResult("User 2 create inventory duplicate", "Successfully created duplicate inventory", false);
+            }
+
+            // create inventory (duplicate with other users)
+            Inventory inventory = inventoryTransaction.create(new Inventory("Spinach", 6));
+
+            if(inventoryTransaction.getError().hasError()) {
+                addTestResult("User 2 create inventory duplicate with user 1", inventoryTransaction.getError().getMessage(), false);
+            }else {
+                addTestResult("User 2 create inventory duplicate with user 1", "Successfully created inventory", true);
+            }
+
+            // update inventory
+            inventory = inventoryTransaction.update(new Inventory(inventory.getId(), "Kale", 9));
+
+            if(inventoryTransaction.getError().hasError()) {
+                addTestResult("Update Spinach to Kale", inventoryTransaction.getError().getMessage(), false);
+            }else {
+                addTestResult("Update Spinach to Kale", "Update successful", true);
+            }
+
+            // updating kale to bacon (duplicate inventory)
+            inventory = inventoryTransaction.update(new Inventory(inventory.getId(), "Bacon", 9));
+
+            if(inventoryTransaction.getError().hasError()) {
+                addTestResult("Update Kale to Bacon (duplicate inventory)", inventoryTransaction.getError().getMessage(), true);
+            }else {
+                addTestResult("Update Kale to Bacon (duplicate inventory)", "Update successful", false);
+            }
 
             // update inventory
         }

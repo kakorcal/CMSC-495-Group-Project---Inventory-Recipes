@@ -149,8 +149,14 @@ public class InventoryTransaction {
 
             if(newInventory != null && newInventory.getUser().getId() == user.getId()) {
 
-                if(newInventory.getName().equals(inventory.getName())) {
-                    error.setMessage("Inventory name must be unique.");
+                // query to check if duplicate name exists
+                Query<Inventory> query = session.createQuery("FROM Inventory I WHERE I.user.id = :user_id AND I.name = :inventory_name", Inventory.class);
+                query.setParameter("user_id", user.getId());
+                query.setParameter("inventory_name", inventory.getName());
+                List<Inventory> list = query.list();
+
+                if(!list.isEmpty()) {
+                    error.setMessage("Cannot have duplicate inventory names.");
                     return null;
                 }
 

@@ -130,8 +130,7 @@ public class InventoryTransaction {
             return null;
         }
 
-        // TODO: tricky here. if we do this, we need to require user to include values that don't need to update
-        // for now, we will go with this for simplicity.
+        // TODO: tricky here. if we do this, we need to require user to include values that don't need to update for now, we will go with this for simplicity.
         if(inventory.getName().isEmpty()) {
             error.setMessage("Please enter an inventory name.");
             return null;

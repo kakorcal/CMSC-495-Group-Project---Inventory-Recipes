@@ -129,6 +129,7 @@ public class RecipeTransaction {
             return null;
         }
 
+        // Required to add title and price even if same value
         if(recipe.getTitle().isEmpty()) {
             error.setMessage("Please enter the recipe title.");
             return null;
@@ -183,6 +184,7 @@ public class RecipeTransaction {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
         Recipe recipe;
+        error.reset();
 
         if(user == null) {
             error.setMessage("Unauthorized to delete recipe.");
@@ -228,6 +230,7 @@ public class RecipeTransaction {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
         List<Recipe> list;
+        error.reset();
 
         if(user == null) {
             error.setMessage("Unauthorized to read recipe.");
@@ -257,5 +260,13 @@ public class RecipeTransaction {
         }
 
         return list;
+    }
+
+    public ErrorHandler getError() {
+        return error;
+    }
+
+    public void setError(ErrorHandler error) {
+        this.error = error;
     }
 }

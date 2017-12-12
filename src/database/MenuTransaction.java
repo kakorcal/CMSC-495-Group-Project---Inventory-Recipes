@@ -11,18 +11,43 @@ import java.util.List;
 public class MenuTransaction {
     private SessionFactory sessionFactory;
     private User user;
+    private ErrorHandler error;
 
     public MenuTransaction(SessionManager manager, User user) {
         this.user = user;
         this.sessionFactory = manager.getSessionFactory();
+        this.error = new ErrorHandler();
     }
 
-    public Menu create(Menu menu) throws HibernateException {
+    public Menu create(Menu menu) {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
+        error.reset();
+
+        if(user == null) {
+            error.setMessage("Unauthorized to create menu.");
+            return null;
+        }
+
+        if(menu.getName().isEmpty()) {
+            error.setMessage("Please enter a menu name.");
+            return null;
+        }
 
         try {
             transaction = session.beginTransaction();
+
+            // check for dups
+            Query<Menu> query = session.createQuery("FROM Menu M WHERE M.user.id = :user_id AND M.name = :menu_name", Menu.class);
+            query.setParameter("user_id", user.getId());
+            query.setParameter("menu_name", menu.getName());
+            List<Menu> list = query.list();
+
+            if(list.isEmpty()) {
+                error.setMessage("Cannot have duplicate menu names.");
+                return null;
+            }
+
             menu.setUser(user);
             session.save(menu);
             transaction.commit();
@@ -33,7 +58,8 @@ public class MenuTransaction {
                 transaction.rollback();
             }
             e.printStackTrace();
-            throw new HibernateException(e);
+            error.setMessage("Failed to create menu.");
+            return null;
         }finally {
             session.close();
         }
@@ -41,10 +67,21 @@ public class MenuTransaction {
         return menu;
     }
 
-    public Menu read(long id) throws HibernateException {
+    public Menu read(long id) {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
         Menu menu;
+        error.reset();
+
+        if(user == null) {
+            error.setMessage("Unauthorized to read menu.");
+            return null;
+        }
+
+        if(id < 0) {
+            error.setMessage("Invalid recipe identifier.");
+            return null;
+        }
 
         try {
             transaction = session.beginTransaction();
@@ -56,7 +93,8 @@ public class MenuTransaction {
                 System.out.println(menu.toString());
             }else {
                 System.out.println("Menu id: " + id + " does not exist");
-                menu = null;
+                error.setMessage("Specified menu does not exist.");
+                return null;
             }
 
             transaction.commit();
@@ -65,7 +103,8 @@ public class MenuTransaction {
                 transaction.rollback();
             }
             e.printStackTrace();
-            throw new HibernateException(e);
+            error.setMessage("Failed to retrieve menu data.");
+            return null;
         }finally {
             session.close();
         }
@@ -73,10 +112,21 @@ public class MenuTransaction {
         return menu;
     }
 
-    public Menu update(Menu menu) throws HibernateException {
+    public Menu update(Menu menu) {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
         Menu newMenu;
+        error.reset();
+
+        if(user == null) {
+            error.setMessage("Unauthorized to update menu.");
+            return null;
+        }
+
+        if(menu.getName().isEmpty()) {
+            error.setMessage("Please enter a menu name.");
+            return null;
+        }
 
         try {
             transaction = session.beginTransaction();
@@ -84,13 +134,20 @@ public class MenuTransaction {
             newMenu = session.get(Menu.class, id);
 
             if(newMenu != null && newMenu.getUser().getId() == user.getId()) {
+
+                if(newMenu.getName().equals(newMenu.getName())) {
+                    error.setMessage("Menu name must be unique.");
+                    return null;
+                }
+
                 newMenu.setName(newMenu.getName());
                 session.update(newMenu);
                 System.out.println("Menu updated: ");
                 System.out.println(newMenu.toString());
             }else {
                 System.out.println("Menu id: " + id + " does not exist");
-                newMenu = null;
+                error.setMessage("Cannot identify menu.");
+                return null;
             }
 
             transaction.commit();
@@ -99,7 +156,8 @@ public class MenuTransaction {
                 transaction.rollback();
             }
             e.printStackTrace();
-            throw new HibernateException(e);
+            error.setMessage("Failed update menu.");
+            return null;
         }finally {
             session.close();
         }
@@ -107,10 +165,21 @@ public class MenuTransaction {
         return newMenu;
     }
 
-    public Menu delete(long id) throws HibernateException {
+    public Menu delete(long id) {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
         Menu menu;
+        error.reset();
+
+        if(user == null) {
+            error.setMessage("Unauthorized to delete menu.");
+            return null;
+        }
+
+        if(id < 0) {
+            error.setMessage("Invalid menu identifier.");
+            return null;
+        }
 
         try {
             transaction = session.beginTransaction();
@@ -123,7 +192,8 @@ public class MenuTransaction {
                 System.out.println(menu.toString());
             }else {
                 System.out.println("Menu id: " + id + " does not exist");
-                menu = null;
+                error.setMessage("Specified menu does not exist.");
+                return null;
             }
 
             transaction.commit();
@@ -132,7 +202,8 @@ public class MenuTransaction {
                 transaction.rollback();
             }
             e.printStackTrace();
-            throw new HibernateException(e);
+            error.setMessage("Failed to delete menu.");
+            return null;
         }finally {
             session.close();
         }
@@ -140,10 +211,16 @@ public class MenuTransaction {
         return menu;
     }
 
-    public List<Menu> list() throws HibernateException {
+    public List<Menu> list() {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
         List<Menu> list;
+        error.reset();
+
+        if(user == null) {
+            error.setMessage("Unauthorized to read recipe.");
+            return null;
+        }
 
         try {
             transaction = session.beginTransaction();
@@ -161,11 +238,20 @@ public class MenuTransaction {
                 transaction.rollback();
             }
             e.printStackTrace();
-            throw new HibernateException(e);
+            error.setMessage("Failed to retrieve menu data.");
+            return null;
         }finally {
             session.close();
         }
 
         return list;
+    }
+
+    public ErrorHandler getError() {
+        return error;
+    }
+
+    public void setError(ErrorHandler error) {
+        this.error = error;
     }
 }

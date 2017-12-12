@@ -43,7 +43,7 @@ public class MenuTransaction {
             query.setParameter("menu_name", menu.getName());
             List<Menu> list = query.list();
 
-            if(list.isEmpty()) {
+            if(!list.isEmpty()) {
                 error.setMessage("Cannot have duplicate menu names.");
                 return null;
             }

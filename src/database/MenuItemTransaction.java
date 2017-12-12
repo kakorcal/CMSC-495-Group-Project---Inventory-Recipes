@@ -60,7 +60,7 @@ public class MenuItemTransaction {
             query.setParameter("recipe_id", recipe.getId());
             List<MenuItem> list = query.list();
 
-            if(list.isEmpty()) {
+            if(!list.isEmpty()) {
                 error.setMessage("Cannot have duplicate menu items.");
                 return null;
             }

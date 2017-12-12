@@ -416,10 +416,12 @@ public class TestApp extends JFrame {
             menuItemTransaction.create(new MenuItem(), m2, r4);
 
             // return back to test2 user
+            user = userTransaction.login("test" + testId, "password");
             resetTransactions();
-            user = userTransaction.signup("test" + testId, "password");
         }
 
+        // main thing is to ensure the methods work, no access to test1 user, and no duplicate names (exception if its other user)
+        // user right now = test2. this is true for the rest of the tests as well.
         private void testInventory() {
             // create inventory (bad input)
 
@@ -430,14 +432,17 @@ public class TestApp extends JFrame {
             // update inventory
         }
 
+        // main thing is to ensure the methods work, no access to test1 user, and no duplicate names (exception if its other user)
         private void testRecipe() {
 
         }
 
+        // main thing is to ensure the methods work, no access to test1 user, and no duplicate names (exception if its other user)
         private void testMenu() {
 
         }
 
+        // main thing is to ensure the methods work, no access to test1 user, and no duplicate names (exception if its other user)
         private void testMenuItem() {
 
         }

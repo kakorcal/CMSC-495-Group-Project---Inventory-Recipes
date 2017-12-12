@@ -49,7 +49,7 @@ public class RecipeTransaction {
             query.setParameter("recipe_title", recipe.getTitle());
             List<Recipe> list = query.list();
 
-            if(list.isEmpty()) {
+            if(!list.isEmpty()) {
                 error.setMessage("Cannot have duplicate recipe titles.");
                 return null;
             }

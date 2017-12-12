@@ -5,11 +5,13 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.List;
 
 public class UserTransaction {
     private SessionFactory sessionFactory;
+    private static final int SALT_WORK_FACTOR = 10;
 
     public UserTransaction(SessionManager manager) {
         this.sessionFactory = manager.getSessionFactory();
@@ -22,9 +24,11 @@ public class UserTransaction {
 
         try {
             transaction = session.beginTransaction();
+            String hash = BCrypt.hashpw(password, BCrypt.gensalt(SALT_WORK_FACTOR));
+
             user = new User();
             user.setUsername(username);
-            user.setPassword(password);
+            user.setPassword(hash);
             session.save(user);
             transaction.commit();
             System.out.println("User created: ");
@@ -62,7 +66,8 @@ public class UserTransaction {
             }else {
                 // throw error if password is incorrect
                 User user = (User) results.get(0);
-                if(!password.equals(user.getPassword())) {
+
+                if(!BCrypt.checkpw(password, user.getPassword())) {
                     System.out.println("Incorrect password.");
                     return null;
                 }else {

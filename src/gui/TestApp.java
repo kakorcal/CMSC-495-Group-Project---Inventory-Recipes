@@ -226,7 +226,7 @@ public class TestApp extends JFrame {
 
                     try {
                         // this can be replaced with userTransaction.login as well. you will just have to change the error message.
-                        user = userTransaction.signup("test", "user");
+                        user = userTransaction.login("test2", "bcrypt");
                         if(user == null) {
                             textarea.setText("Invalid credentials.");
                             return;
@@ -236,35 +236,37 @@ public class TestApp extends JFrame {
                         return;
                     }
 
-                    // creating all transaction instances
-                    inventoryTransaction = new InventoryTransaction(manager, user);
-                    recipeTransaction = new RecipeTransaction(manager, user);
-                    menuTransaction = new MenuTransaction(manager, user);
-                    // menu item is dependent on menu and recipe when called the CRUDL methods
-                    menuItemTransaction = new MenuItemTransaction(manager);
+                    System.out.println("LOGIN SUCCESS");
 
-                    // doing some transactions
-
-                    // create inventory
-                    inventoryTransaction.create(new Inventory("Egg", 12));
-                    inventoryTransaction.create(new Inventory("Milk", 1));
-                    inventoryTransaction.list();
-
-                    // call api and retrieve recipe. pass that result into Recipe object
-                    recipeTransaction.create(new Recipe("Title1", "Source1", "Image1", 10.00));
-                    recipeTransaction.create(new Recipe("Title2", "Source2", "Image2", 20.00));
-                    recipeTransaction.create(new Recipe("Title3", "Source3", "Image3", 22.00));
-                    List<Recipe> recipes = recipeTransaction.list();
-
-                    // create a menu based on the recipe
-                    Menu menu1 = menuTransaction.create(new Menu("Menu1"));
-                    menuTransaction.list();
-
-                    // create the menu items
-                    for(Recipe recipe: recipes) {
-                        menuItemTransaction.create(new MenuItem(), menu1, recipe);
-                    }
-                    menuItemTransaction.list(menu1);
+//                    // creating all transaction instances
+//                    inventoryTransaction = new InventoryTransaction(manager, user);
+//                    recipeTransaction = new RecipeTransaction(manager, user);
+//                    menuTransaction = new MenuTransaction(manager, user);
+//                    // menu item is dependent on menu and recipe when called the CRUDL methods
+//                    menuItemTransaction = new MenuItemTransaction(manager);
+//
+//                    // doing some transactions
+//
+//                    // create inventory
+//                    inventoryTransaction.create(new Inventory("Egg", 12));
+//                    inventoryTransaction.create(new Inventory("Milk", 1));
+//                    inventoryTransaction.list();
+//
+//                    // call api and retrieve recipe. pass that result into Recipe object
+//                    recipeTransaction.create(new Recipe("Title1", "Source1", "Image1", 10.00));
+//                    recipeTransaction.create(new Recipe("Title2", "Source2", "Image2", 20.00));
+//                    recipeTransaction.create(new Recipe("Title3", "Source3", "Image3", 22.00));
+//                    List<Recipe> recipes = recipeTransaction.list();
+//
+//                    // create a menu based on the recipe
+//                    Menu menu1 = menuTransaction.create(new Menu("Menu1"));
+//                    menuTransaction.list();
+//
+//                    // create the menu items
+//                    for(Recipe recipe: recipes) {
+//                        menuItemTransaction.create(new MenuItem(), menu1, recipe);
+//                    }
+//                    menuItemTransaction.list(menu1);
                 }
             });
 

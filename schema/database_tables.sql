@@ -5,8 +5,8 @@
 -- note: for simplicity, we will require user to login everytime the app initializes
 CREATE TABLE User (
   id int SERIAL DEFAULT VALUE,
-  username varchar(60) NOT NULL UNIQUE,
-  password varchar(60) NOT NULL
+  username text NOT NULL UNIQUE,
+  password text NOT NULL
 );
 
 -- Inventory table is also simple. Notice that there is a user_id foreign key constraint.

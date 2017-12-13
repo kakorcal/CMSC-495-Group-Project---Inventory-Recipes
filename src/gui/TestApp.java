@@ -261,6 +261,8 @@ public class TestApp extends JFrame {
                     testUser();
                     testInventory();
                     testRecipe();
+                    testMenu();
+                    testMenuItem();
                 }
             });
 
@@ -547,26 +549,77 @@ public class TestApp extends JFrame {
             }
 
             // add more recipes for testing menu
-
+            recipeTransaction.create(new Recipe("Bacon and Eggs", "source6", "img6", 7.00));
+            recipeTransaction.create(new Recipe("Egg Pasta", "source7", "img7"));
+            recipeTransaction.create(new Recipe("Tofu Pasta", "source8", "img8", 4.50));
         }
 
         // main thing is to ensure the methods work, no access to test1 user, and no duplicate names (exception if its other user)
         private void testMenu() {
+            menuTransaction = new MenuTransaction(manager, user);
+
             // create menu (good input)
+            menuTransaction.create(new Menu("Brunch"));
+
+            if(menuTransaction.getError().hasError()) {
+                addTestResult("Create menu", menuTransaction.getError().getMessage(), false);
+            }else {
+                addTestResult("Create menu", "Successfully created menu", true);
+            }
 
             // create menu (duplicate)
+            menuTransaction.create(new Menu("Brunch"));
+
+            if(menuTransaction.getError().hasError()) {
+                addTestResult("Create menu (duplicate)", menuTransaction.getError().getMessage(), true);
+            }else {
+                addTestResult("Create menu (duplicate)", "Successfully created menu", false);
+            }
 
             // create menu (duplicate with other users)
+            Menu menu = menuTransaction.create(new Menu("Morning"));
+
+            if(menuTransaction.getError().hasError()) {
+                addTestResult("Create menu (duplicate with other users)", menuTransaction.getError().getMessage(), false);
+            }else {
+                addTestResult("Create menu (duplicate with other users)", "Successfully created menu", true);
+            }
 
             // update menu
+            menu = menuTransaction.update(new Menu(menu.getId(), "Lunch"));
 
-            // Updating Turkey and Eggs to Chicken curry with Naan (duplicate menu)
+            if(menuTransaction.getError().hasError()) {
+                addTestResult("Update menu", menuTransaction.getError().getMessage(), false);
+            }else {
+                addTestResult("Update menu", "Successfully updated menu", true);
+            }
 
-            // delete Turkey and Eggs
+            // Updating Lunch to Morning (duplicate menu)
+            menuTransaction.update(new Menu(menu.getId(), "Morning"));
+
+            if(menuTransaction.getError().hasError()) {
+                addTestResult("Update Lunch to Morning (duplicate menu)", menuTransaction.getError().getMessage(), true);
+            }else {
+                addTestResult("Update Lunch to Morning (duplicate menu)", "Successfully updated menu", false);
+            }
+
+            // delete Lunch
+            menuTransaction.delete(menu.getId());
+
+            if(menuTransaction.getError().hasError()) {
+                addTestResult("Delete Lunch", menuTransaction.getError().getMessage(), false);
+            }else {
+                addTestResult("Delete Lunch", "Successfully deleted menu", true);
+            }
+
+            // add more menu for menuitem
+            menuTransaction.create(new Menu("Morning"));
         }
 
         // main thing is to ensure the methods work, no access to test1 user, and no duplicate names (exception if its other user)
         private void testMenuItem() {
+            menuItemTransaction = new MenuItemTransaction(manager, user);
+
             // create menuitem (good input)
 
             // create menuitem (duplicate)

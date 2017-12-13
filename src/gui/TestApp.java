@@ -305,6 +305,9 @@ public class TestApp extends JFrame {
             );
         }
 
+        private Menu lunchMenu;
+        private Recipe user1Recipe;
+
         private void testUser() {
             int testId = 1;
 
@@ -390,20 +393,20 @@ public class TestApp extends JFrame {
 
             recipeTransaction = new RecipeTransaction(manager, user);
 
-            Recipe r1 = recipeTransaction.create(new Recipe("Turkey Kale Pasta", "source1", "url1"));
+            user1Recipe = recipeTransaction.create(new Recipe("Turkey Kale Pasta", "source1", "url1"));
             Recipe r2 = recipeTransaction.create(new Recipe("Spinach and Eggs", "source2", "url2", 10.00));
             Recipe r3 = recipeTransaction.create(new Recipe("Turkey and Eggs", "source3", "url3", 12.00));
             Recipe r4 = recipeTransaction.create(new Recipe("Egg Pasta", "source4", "url4", 8.00));
 
             menuTransaction = new MenuTransaction(manager, user);
 
-            Menu m1 = menuTransaction.create(new Menu("Morning"));
+            lunchMenu = menuTransaction.create(new Menu("Morning"));
             Menu m2 = menuTransaction.create(new Menu("Lunch"));
 
             menuItemTransaction = new MenuItemTransaction(manager, user);
 
-            menuItemTransaction.create(new MenuItem(), m1, r1);
-            menuItemTransaction.create(new MenuItem(), m1, r2);
+            menuItemTransaction.create(new MenuItem(), lunchMenu, user1Recipe);
+            menuItemTransaction.create(new MenuItem(), lunchMenu, r2);
 
             menuItemTransaction.create(new MenuItem(), m2, r2);
             menuItemTransaction.create(new MenuItem(), m2, r3);
@@ -620,19 +623,73 @@ public class TestApp extends JFrame {
         private void testMenuItem() {
             menuItemTransaction = new MenuItemTransaction(manager, user);
 
+            List<Recipe> recipes = recipeTransaction.list();
+            List<Menu> menus = menuTransaction.list();
+            Recipe r1;
+            Recipe r2;
+            Recipe r3;
+            Recipe r4;
+            Menu m1;
+            Menu m2;
+
+            if(recipes.size() == 4) {
+                r1 = recipes.get(0);
+                r2 = recipes.get(1);
+                r3 = recipes.get(2);
+                r4 = recipes.get(3);
+            } else {
+                return;
+            }
+
+            if(menus.size() == 2) {
+                m1 = menus.get(0);
+                m2 = menus.get(1);
+            }else {
+                return;
+            }
+
             // create menuitem (good input)
+            MenuItem menuItem = menuItemTransaction.create(new MenuItem(), m1, r1);
+
+            if(menuItemTransaction.getError().hasError()) {
+                addTestResult("Create menu item", menuItemTransaction.getError().getMessage(), false);
+            }else {
+                addTestResult("Create menu item", "Successfully created menu item", true);
+            }
 
             // create menuitem (duplicate)
+            menuItemTransaction.create(new MenuItem(), m1, r1);
+
+            if(menuItemTransaction.getError().hasError()) {
+                addTestResult("Create menu item (duplicate)", menuItemTransaction.getError().getMessage(), true);
+            }else {
+                addTestResult("Create menu item (duplicate)", "Successfully created menu item", false);
+            }
 
             // create menuitem (duplicate with other users)
+            menuItemTransaction.create(new MenuItem(), lunchMenu, user1Recipe);
 
-            // update menuitem
+            if(menuItemTransaction.getError().hasError()) {
+                addTestResult("Create menu item (duplicate with other users)", menuItemTransaction.getError().getMessage(), true);
+            }else {
+                addTestResult("Create menu item (duplicate with other users)", "Successfully created menu item", false);
+            }
 
-            // Updating Turkey and Eggs to Chicken curry with Naan (duplicate menuitem)
+            // delete menu item
+            menuItemTransaction.delete(menuItem.getId(), menuItem.getMenu(), menuItem.getRecipe());
 
-            // delete Turkey and Eggs
+            if(menuItemTransaction.getError().hasError()) {
+                addTestResult("Delete menu item", menuItemTransaction.getError().getMessage(), false);
+            }else {
+                addTestResult("Delete menu item", "Successfully deleted menu item", true);
+            }
+
+            // add more menu items
+            menuItemTransaction.create(new MenuItem(), m2, r2);
+            menuItemTransaction.create(new MenuItem(), m2, r3);
+            menuItemTransaction.create(new MenuItem(), m1, r4);
+            menuItemTransaction.create(new MenuItem(), m1, r3);
         }
 
     }
 }
-

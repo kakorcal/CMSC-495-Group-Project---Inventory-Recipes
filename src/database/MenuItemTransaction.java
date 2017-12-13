@@ -46,6 +46,11 @@ public class MenuItemTransaction {
             return null;
         }
 
+        if(user.getId() != recipe.getUser().getId()) {
+            error.setMessage("Unauthorized to read menu item.");
+            return null;
+        }
+
         if(recipe == null) {
             error.setMessage("Please select a recipe.");
             return null;
@@ -85,7 +90,7 @@ public class MenuItemTransaction {
         return menuItem;
     }
 
-    public MenuItem read(long id, Menu menu) {
+    public MenuItem read(long id, Menu menu, Recipe recipe) {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
         MenuItem menuItem;
@@ -103,6 +108,16 @@ public class MenuItemTransaction {
 
         if(user.getId() != menu.getUser().getId()) {
             error.setMessage("Unauthorized to read menu item.");
+            return null;
+        }
+
+        if(user.getId() != recipe.getUser().getId()) {
+            error.setMessage("Unauthorized to read menu item.");
+            return null;
+        }
+
+        if(recipe == null) {
+            error.setMessage("Please select a recipe.");
             return null;
         }
 
@@ -174,7 +189,7 @@ public class MenuItemTransaction {
 //        return newMenuItem;
 //    }
 
-    public MenuItem delete(long id, Menu menu) {
+    public MenuItem delete(long id, Menu menu, Recipe recipe) {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
         MenuItem menuItem;
@@ -192,6 +207,16 @@ public class MenuItemTransaction {
 
         if(user.getId() != menu.getUser().getId()) {
             error.setMessage("Unauthorized to read menu item.");
+            return null;
+        }
+
+        if(user.getId() != recipe.getUser().getId()) {
+            error.setMessage("Unauthorized to read menu item.");
+            return null;
+        }
+
+        if(recipe == null) {
+            error.setMessage("Please select a recipe.");
             return null;
         }
 

@@ -8,12 +8,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
-import javax.swing.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-
-import static com.sun.java.accessibility.util.AWTEventMonitor.addWindowListener;
-
 public class RestaurantApp extends Application {
     private SessionManager manager = null;
     private User user = null;

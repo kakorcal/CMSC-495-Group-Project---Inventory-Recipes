@@ -58,7 +58,7 @@ public class AuthFormController {
             app.setUser(user);
 
             Stage primaryStage = (Stage) usernameField.getScene().getWindow();
-            // NOTE TO ROSS: you change the scene to your GUI by replacing "/api/recipeChooser.fxml"
+            // NOTE TO ROSS/DUSTIN/ALEX: you change the scene to your GUI by replacing "/api/recipeChooser.fxml"
             Parent recipeChooser = FXMLLoader.load(getClass().getResource("/api/recipeChooser.fxml"));
             primaryStage.setScene(new Scene(recipeChooser));
         }

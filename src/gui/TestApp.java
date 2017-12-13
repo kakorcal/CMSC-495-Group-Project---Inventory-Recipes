@@ -465,7 +465,7 @@ public class TestApp extends JFrame {
             }
 
             // updating kale to bacon (duplicate inventory)
-            inventory = inventoryTransaction.update(new Inventory(inventory.getId(), "Bacon", 9));
+            inventoryTransaction.update(new Inventory(inventory.getId(), "Bacon", 9));
 
             if(inventoryTransaction.getError().hasError()) {
                 addTestResult("Update Kale to Bacon (duplicate inventory)", inventoryTransaction.getError().getMessage(), true);
@@ -473,7 +473,19 @@ public class TestApp extends JFrame {
                 addTestResult("Update Kale to Bacon (duplicate inventory)", "Update successful", false);
             }
 
-            // update inventory
+            // delete inventory
+            inventoryTransaction.delete(inventory.getId());
+
+            if(inventoryTransaction.getError().hasError()) {
+                addTestResult("Delete Bacon", inventoryTransaction.getError().getMessage(), false);
+            }else {
+                addTestResult("Delete Bacon", "Delete successful", true);
+            }
+
+            // adding more inventory
+            inventoryTransaction.create(new Inventory("Chicken", 3));
+            inventoryTransaction.create(new Inventory("Naan", 5));
+            inventoryTransaction.create(new Inventory("Tofu", 1));
         }
 
         // main thing is to ensure the methods work, no access to test1 user, and no duplicate names (exception if its other user)

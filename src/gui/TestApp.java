@@ -260,6 +260,7 @@ public class TestApp extends JFrame {
 
                     testUser();
                     testInventory();
+                    testRecipe();
                 }
             });
 
@@ -284,15 +285,6 @@ public class TestApp extends JFrame {
         * Major things to test: User authentication, Duplicate name / title, Distinguish user data from others.
         * These tests ARE NOT an exhaustive list. This only tests for major issues that may occur.
         * */
-
-        private void resetTransactions() {
-//            user = null;
-//            userTransaction = null;
-            inventoryTransaction = null;
-            recipeTransaction = null;
-            menuTransaction = null;
-            menuItemTransaction = null;
-        }
 
         private void addTestResult(String testTitle, String results, Boolean pass) {
             String str = "";
@@ -417,7 +409,12 @@ public class TestApp extends JFrame {
 
             // return back to test2 user
             user = userTransaction.login("test" + testId, "password");
-            resetTransactions();
+
+            // reset so that user2 gets access to the methods
+            inventoryTransaction = null;
+            recipeTransaction = null;
+            menuTransaction = null;
+            menuItemTransaction = null;
         }
 
         // main thing is to ensure the methods work, no access to test1 user, and no duplicate names (exception if its other user)
@@ -486,21 +483,101 @@ public class TestApp extends JFrame {
             inventoryTransaction.create(new Inventory("Chicken", 3));
             inventoryTransaction.create(new Inventory("Naan", 5));
             inventoryTransaction.create(new Inventory("Tofu", 1));
+            inventoryTransaction.create(new Inventory("Egg", 1));
+            inventoryTransaction.create(new Inventory("Pasta", 1));
         }
 
         // main thing is to ensure the methods work, no access to test1 user, and no duplicate names (exception if its other user)
         private void testRecipe() {
+            recipeTransaction = new RecipeTransaction(manager, user);
+
+            // create recipe (good input)
+            recipeTransaction.create(new Recipe("Chicken curry with Naan", "source1", "img1", 14.00));
+
+            if(recipeTransaction.getError().hasError()) {
+                addTestResult("Create recipe", recipeTransaction.getError().getMessage(), false);
+            }else {
+                addTestResult("Create recipe", "Successfully created recipe", true);
+            }
+
+            // create recipe (duplicate)
+            recipeTransaction.create(new Recipe("Chicken curry with Naan", "source2", "img2", 10.00));
+
+            if(recipeTransaction.getError().hasError()) {
+                addTestResult("Create recipe (duplicate)", recipeTransaction.getError().getMessage(), true);
+            }else {
+                addTestResult("Create recipe (duplicate)", "Successfully created recipe", false);
+            }
+
+            // create recipe (duplicate with other users)
+            Recipe recipe = recipeTransaction.create(new Recipe("Egg Pasta", "source3", "img3", 8.00));
+
+            if(recipeTransaction.getError().hasError()) {
+                addTestResult("Create recipe (duplicate with other users)", recipeTransaction.getError().getMessage(), false);
+            }else {
+                addTestResult("Create recipe (duplicate with other users)", "Successfully created recipe", true);
+            }
+
+            // update recipe
+            recipe = recipeTransaction.update(new Recipe(recipe.getId(), "Turkey and Eggs", "source5", "img5", 5.00));
+
+            if(recipeTransaction.getError().hasError()) {
+                addTestResult("Update recipe", recipeTransaction.getError().getMessage(), false);
+            }else {
+                addTestResult("Update recipe", "Successfully updated recipe", true);
+            }
+
+            // Updating Turkey and Eggs to Chicken curry with Naan (duplicate recipe)
+            // TODO: trim front and back of title, otherwise the update will work
+            recipeTransaction.update(new Recipe(recipe.getId(), "Chicken curry with Naan", "source5", "img5", 5.00));
+
+            if(recipeTransaction.getError().hasError()) {
+                addTestResult("Updating Turkey and Eggs to Chicken curry with Naan (duplicate recipe)", recipeTransaction.getError().getMessage(), true);
+            }else {
+                addTestResult("Updating Turkey and Eggs to Chicken curry with Naan (duplicate recipe)", "Successfully updated recipe", false);
+            }
+
+            // delete Turkey and Eggs
+            recipeTransaction.delete(recipe.getId());
+
+            if(recipeTransaction.getError().hasError()) {
+                addTestResult("Delete recipe Turkey and Eggs", recipeTransaction.getError().getMessage(), false);
+            }else {
+                addTestResult("Delete recipe Turkey and Eggs", "Successfully deleted recipe", true);
+            }
+
+            // add more recipes for testing menu
 
         }
 
         // main thing is to ensure the methods work, no access to test1 user, and no duplicate names (exception if its other user)
         private void testMenu() {
+            // create menu (good input)
 
+            // create menu (duplicate)
+
+            // create menu (duplicate with other users)
+
+            // update menu
+
+            // Updating Turkey and Eggs to Chicken curry with Naan (duplicate menu)
+
+            // delete Turkey and Eggs
         }
 
         // main thing is to ensure the methods work, no access to test1 user, and no duplicate names (exception if its other user)
         private void testMenuItem() {
+            // create menuitem (good input)
 
+            // create menuitem (duplicate)
+
+            // create menuitem (duplicate with other users)
+
+            // update menuitem
+
+            // Updating Turkey and Eggs to Chicken curry with Naan (duplicate menuitem)
+
+            // delete Turkey and Eggs
         }
 
     }

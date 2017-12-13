@@ -147,8 +147,14 @@ public class RecipeTransaction {
 
             if(newRecipe != null && newRecipe.getUser().getId() == user.getId()) {
 
-                if(newRecipe.getTitle().equals(newRecipe.getTitle())) {
-                    error.setMessage("Recipe title must be unique.");
+                // check for dups
+                Query<Recipe> query = session.createQuery("FROM Recipe R WHERE R.user.id = :user_id AND R.title = :recipe_title", Recipe.class);
+                query.setParameter("user_id", user.getId());
+                query.setParameter("recipe_title", recipe.getTitle());
+                List<Recipe> list = query.list();
+
+                if(!list.isEmpty()) {
+                    error.setMessage("Cannot have duplicate recipe titles.");
                     return null;
                 }
 

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+
+<?import javafx.scene.text.Text?>
+<GridPane fx:controller="gui.AuthFormController"
+          xmlns:fx="http://javafx.com/fxml" alignment="center" hgap="10" vgap="10">
+    <padding><Insets top="25" right="25" bottom="10" left="25"/></padding>
+
+    <Text GridPane.columnIndex="0" GridPane.rowIndex="0"
+          GridPane.columnSpan="3" text="Restaurant Management Application"
+          style="-fx-font-size: 17px; -fx-fill: #0aa970; -fx-translate-x: 38px;"/>
+
+    <Label text="Username:"
+           GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+
+    <TextField fx:id="usernameField"
+            GridPane.columnIndex="2" GridPane.rowIndex="1" GridPane.columnSpan="2"/>
+
+    <Label text="Password:"
+           GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+
+    <PasswordField fx:id="passwordField"
+                   GridPane.columnIndex="2" GridPane.rowIndex="2" GridPane.columnSpan="2"/>
+
+    <HBox spacing="10" alignment="BOTTOM_RIGHT"
+          GridPane.columnIndex="2" GridPane.rowIndex="4">
+        <Button text="Login"
+                onAction="#handleLogin"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="BOTTOM_RIGHT"
+          GridPane.columnIndex="3" GridPane.rowIndex="4">
+        <Button text="Sign Up"
+                onAction="#handleSignup"/>
+    </HBox>
+
+    <Text fx:id="errorMessage" textAlignment="CENTER" style="-fx-fill: #ff0000;"
+          GridPane.columnIndex="0" GridPane.rowIndex="5" GridPane.columnSpan="3"/>
+</GridPane>

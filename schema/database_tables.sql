@@ -5,8 +5,8 @@
 -- note: for simplicity, we will require user to login everytime the app initializes
 CREATE TABLE User (
   id int SERIAL DEFAULT VALUE,
-  username varchar(60) NOT NULL UNIQUE,
-  password varchar(60) NOT NULL
+  username text NOT NULL UNIQUE,
+  password text NOT NULL
 );
 
 -- Inventory table is also simple. Notice that there is a user_id foreign key constraint.
@@ -30,7 +30,7 @@ CREATE TABLE Recipe (
   title text NOT NULL,
   source_url text,
   image_url text,
-  price double UNSIGNED,
+  price double UNSIGNED NOT NULL DEFAULT '0.00',
   user_id int NOT NULL,
   FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE CASCADE
 );

@@ -40,6 +40,8 @@ public class Recipe {
         this.title = title;
         this.sourceUrl = sourceUrl;
         this.imageUrl = imageUrl;
+        // adding default price to prevent sql error
+        this.price = 0.00;
     }
 
     // for creating new recipe

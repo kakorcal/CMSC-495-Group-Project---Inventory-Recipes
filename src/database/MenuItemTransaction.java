@@ -17,17 +17,59 @@ public class MenuItemTransaction {
      * */
 
     private SessionFactory sessionFactory;
+    private ErrorHandler error;
+    private User user;
     
-    public MenuItemTransaction(SessionManager manager) {
+    public MenuItemTransaction(SessionManager manager, User user) {
+        this.user = user;
         this.sessionFactory = manager.getSessionFactory();
+        this.error = new ErrorHandler();
     }
 
-    public MenuItem create(MenuItem menuItem, Menu menu, Recipe recipe) throws HibernateException {
+    public MenuItem create(MenuItem menuItem, Menu menu, Recipe recipe) {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
+        error.reset();
+
+        if(user == null) {
+            error.setMessage("Unauthorized to create menu.");
+            return null;
+        }
+
+        if(menu == null) {
+            error.setMessage("Please select a menu.");
+            return null;
+        }
+
+        if(user.getId() != menu.getUser().getId()) {
+            error.setMessage("Unauthorized to read menu item.");
+            return null;
+        }
+
+        if(user.getId() != recipe.getUser().getId()) {
+            error.setMessage("Unauthorized to read menu item.");
+            return null;
+        }
+
+        if(recipe == null) {
+            error.setMessage("Please select a recipe.");
+            return null;
+        }
 
         try {
             transaction = session.beginTransaction();
+
+            // check for dups
+            Query<MenuItem> query = session.createQuery("FROM MenuItem M WHERE M.menu.id = :menu_id AND M.recipe.id = :recipe_id", MenuItem.class);
+            query.setParameter("menu_id", menu.getId());
+            query.setParameter("recipe_id", recipe.getId());
+            List<MenuItem> list = query.list();
+
+            if(!list.isEmpty()) {
+                error.setMessage("Cannot have duplicate menu items.");
+                return null;
+            }
+
             menuItem.setMenu(menu);
             menuItem.setRecipe(recipe);
             session.save(menuItem);
@@ -39,7 +81,8 @@ public class MenuItemTransaction {
                 transaction.rollback();
             }
             e.printStackTrace();
-            throw new HibernateException(e);
+            error.setMessage("Failed to create menu item.");
+            return null;
         }finally {
             session.close();
         }
@@ -47,10 +90,41 @@ public class MenuItemTransaction {
         return menuItem;
     }
 
-    public MenuItem read(long id, Menu menu) throws HibernateException {
+    public MenuItem read(long id, Menu menu, Recipe recipe) {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
         MenuItem menuItem;
+        error.reset();
+
+        if(user == null) {
+            error.setMessage("Unauthorized to read menu item.");
+            return null;
+        }
+
+        if(menu == null) {
+            error.setMessage("Please select a menu.");
+            return null;
+        }
+
+        if(user.getId() != menu.getUser().getId()) {
+            error.setMessage("Unauthorized to read menu item.");
+            return null;
+        }
+
+        if(user.getId() != recipe.getUser().getId()) {
+            error.setMessage("Unauthorized to read menu item.");
+            return null;
+        }
+
+        if(recipe == null) {
+            error.setMessage("Please select a recipe.");
+            return null;
+        }
+
+        if(id < 0) {
+            error.setMessage("Invalid menu item identifier.");
+            return null;
+        }
 
         try {
             transaction = session.beginTransaction();
@@ -62,7 +136,8 @@ public class MenuItemTransaction {
                 System.out.println(menuItem.toString());
             }else {
                 System.out.println("Menu item id: " + id + " does not exist");
-                menuItem = null;
+                error.setMessage("Specified menu item does not exist.");
+                return null;
             }
 
             transaction.commit();
@@ -71,7 +146,8 @@ public class MenuItemTransaction {
                 transaction.rollback();
             }
             e.printStackTrace();
-            throw new HibernateException(e);
+            error.setMessage("Failed to retrieve menu item data.");
+            return null;
         }finally {
             session.close();
         }
@@ -113,10 +189,41 @@ public class MenuItemTransaction {
 //        return newMenuItem;
 //    }
 
-    public MenuItem delete(long id, Menu menu) throws HibernateException {
+    public MenuItem delete(long id, Menu menu, Recipe recipe) {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
         MenuItem menuItem;
+        error.reset();
+
+        if(user == null) {
+            error.setMessage("Unauthorized to read menu item.");
+            return null;
+        }
+
+        if(menu == null) {
+            error.setMessage("Please select a menu.");
+            return null;
+        }
+
+        if(user.getId() != menu.getUser().getId()) {
+            error.setMessage("Unauthorized to read menu item.");
+            return null;
+        }
+
+        if(user.getId() != recipe.getUser().getId()) {
+            error.setMessage("Unauthorized to read menu item.");
+            return null;
+        }
+
+        if(recipe == null) {
+            error.setMessage("Please select a recipe.");
+            return null;
+        }
+
+        if(id < 0) {
+            error.setMessage("Invalid menu item identifier.");
+            return null;
+        }
 
         try {
             transaction = session.beginTransaction();
@@ -129,7 +236,8 @@ public class MenuItemTransaction {
                 System.out.println(menuItem.toString());
             }else {
                 System.out.println("Menu item id: " + id + " does not exist");
-                menuItem = null;
+                error.setMessage("Specified menu item does not exist.");
+                return null;
             }
 
             transaction.commit();
@@ -138,7 +246,8 @@ public class MenuItemTransaction {
                 transaction.rollback();
             }
             e.printStackTrace();
-            throw new HibernateException(e);
+            error.setMessage("Failed to delete menu item.");
+            return null;
         }finally {
             session.close();
         }
@@ -146,10 +255,26 @@ public class MenuItemTransaction {
         return menuItem;
     }
 
-    public List<MenuItem> list(Menu menu) throws HibernateException {
+    public List<MenuItem> list(Menu menu) {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
         List<MenuItem> list;
+        error.reset();
+
+        if(user == null) {
+            error.setMessage("Unauthorized to read menu item.");
+            return null;
+        }
+
+        if(menu == null) {
+            error.setMessage("Please select a menu.");
+            return null;
+        }
+
+        if(user.getId() != menu.getUser().getId()) {
+            error.setMessage("Unauthorized to read menu item.");
+            return null;
+        }
 
         try {
             transaction = session.beginTransaction();
@@ -167,7 +292,8 @@ public class MenuItemTransaction {
                 transaction.rollback();
             }
             e.printStackTrace();
-            throw new HibernateException(e);
+            error.setMessage("Failed to retrieve menu data.");
+            return null;
         }finally {
             session.close();
         }
@@ -175,7 +301,15 @@ public class MenuItemTransaction {
         return list;
     }
 
-//    public Menu getMenu() {
+    public ErrorHandler getError() {
+        return error;
+    }
+
+    public void setError(ErrorHandler error) {
+        this.error = error;
+    }
+
+    //    public Menu getMenu() {
 //        return menu;
 //    }
 //

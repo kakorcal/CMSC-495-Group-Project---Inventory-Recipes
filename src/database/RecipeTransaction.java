@@ -11,18 +11,49 @@ import java.util.List;
 public class RecipeTransaction {
     private SessionFactory sessionFactory;
     private User user;
+    private ErrorHandler error;
 
     public RecipeTransaction(SessionManager manager, User user) {
         this.user = user;
         this.sessionFactory = manager.getSessionFactory();
+        this.error = new ErrorHandler();
     }
 
-    public Recipe create(Recipe recipe) throws HibernateException {
+    public Recipe create(Recipe recipe) {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
+        error.reset();
+
+        if(user == null) {
+            error.setMessage("Unauthorized to create recipe.");
+            return null;
+        }
+
+        if(recipe.getTitle().isEmpty()) {
+            error.setMessage("Please enter the recipe title.");
+            return null;
+        }
+
+        // TODO: need to test this. how to check if null?
+        if(recipe.getPrice() < 0) {
+            error.setMessage("Recipe price must be greater than 0.");
+            return null;
+        }
 
         try {
             transaction = session.beginTransaction();
+
+            // check for dups
+            Query<Recipe> query = session.createQuery("FROM Recipe R WHERE R.user.id = :user_id AND R.title = :recipe_title", Recipe.class);
+            query.setParameter("user_id", user.getId());
+            query.setParameter("recipe_title", recipe.getTitle());
+            List<Recipe> list = query.list();
+
+            if(!list.isEmpty()) {
+                error.setMessage("Cannot have duplicate recipe titles.");
+                return null;
+            }
+
             recipe.setUser(user);
             session.save(recipe);
             transaction.commit();
@@ -33,7 +64,8 @@ public class RecipeTransaction {
                 transaction.rollback();
             }
             e.printStackTrace();
-            throw new HibernateException(e);
+            error.setMessage("Failed to create recipe.");
+            return null;
         }finally {
             session.close();
         }
@@ -41,10 +73,21 @@ public class RecipeTransaction {
         return recipe;
     }
 
-    public Recipe read(long id) throws HibernateException {
+    public Recipe read(long id) {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
         Recipe recipe;
+        error.reset();
+
+        if(user == null) {
+            error.setMessage("Unauthorized to read recipe.");
+            return null;
+        }
+
+        if(id < 0) {
+            error.setMessage("Invalid recipe identifier.");
+            return null;
+        }
 
         try {
             transaction = session.beginTransaction();
@@ -56,7 +99,8 @@ public class RecipeTransaction {
                 System.out.println(recipe.toString());
             }else {
                 System.out.println("Recipe id: " + id + " does not exist");
-                recipe = null;
+                error.setMessage("Specified recipe does not exist.");
+                return null;
             }
 
             transaction.commit();
@@ -65,7 +109,8 @@ public class RecipeTransaction {
                 transaction.rollback();
             }
             e.printStackTrace();
-            throw new HibernateException(e);
+            error.setMessage("Failed to retrieve recipe data.");
+            return null;
         }finally {
             session.close();
         }
@@ -77,6 +122,23 @@ public class RecipeTransaction {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
         Recipe newRecipe;
+        error.reset();
+
+        if(user == null) {
+            error.setMessage("Unauthorized to update recipe.");
+            return null;
+        }
+
+        // Required to add title and price even if same value
+        if(recipe.getTitle().isEmpty()) {
+            error.setMessage("Please enter the recipe title.");
+            return null;
+        }
+
+        if(recipe.getPrice() < 0) {
+            error.setMessage("Recipe price must be greater than 0.");
+            return null;
+        }
 
         try {
             transaction = session.beginTransaction();
@@ -84,6 +146,18 @@ public class RecipeTransaction {
             newRecipe = session.get(Recipe.class, id);
 
             if(newRecipe != null && newRecipe.getUser().getId() == user.getId()) {
+
+                // check for dups
+                Query<Recipe> query = session.createQuery("FROM Recipe R WHERE R.user.id = :user_id AND R.title = :recipe_title", Recipe.class);
+                query.setParameter("user_id", user.getId());
+                query.setParameter("recipe_title", recipe.getTitle());
+                List<Recipe> list = query.list();
+
+                if(!list.isEmpty()) {
+                    error.setMessage("Cannot have duplicate recipe titles.");
+                    return null;
+                }
+
                 newRecipe.setTitle(recipe.getTitle());
                 newRecipe.setSourceUrl(recipe.getSourceUrl());
                 newRecipe.setImageUrl(recipe.getImageUrl());
@@ -93,7 +167,8 @@ public class RecipeTransaction {
                 System.out.println(newRecipe.toString());
             }else {
                 System.out.println("Recipe id: " + id + " does not exist");
-                newRecipe = null;
+                error.setMessage("Cannot identify recipe.");
+                return null;
             }
 
             transaction.commit();
@@ -102,7 +177,8 @@ public class RecipeTransaction {
                 transaction.rollback();
             }
             e.printStackTrace();
-            throw new HibernateException(e);
+            error.setMessage("Failed to update recipe.");
+            return null;
         }finally {
             session.close();
         }
@@ -110,10 +186,21 @@ public class RecipeTransaction {
         return newRecipe;
     }
 
-    public Recipe delete(long id) throws HibernateException {
+    public Recipe delete(long id) {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
         Recipe recipe;
+        error.reset();
+
+        if(user == null) {
+            error.setMessage("Unauthorized to delete recipe.");
+            return null;
+        }
+
+        if(id < 0) {
+            error.setMessage("Invalid recipe identifier.");
+            return null;
+        }
 
         try {
             transaction = session.beginTransaction();
@@ -126,7 +213,8 @@ public class RecipeTransaction {
                 System.out.println(recipe.toString());
             }else {
                 System.out.println("Recipe id: " + id + " does not exist");
-                recipe = null;
+                error.setMessage("Specified recipe does not exist.");
+                return null;
             }
 
             transaction.commit();
@@ -135,7 +223,8 @@ public class RecipeTransaction {
                 transaction.rollback();
             }
             e.printStackTrace();
-            throw new HibernateException(e);
+            error.setMessage("Failed to delete recipe.");
+            return null;
         }finally {
             session.close();
         }
@@ -143,10 +232,16 @@ public class RecipeTransaction {
         return recipe;
     }
 
-    public List<Recipe> list() throws HibernateException {
+    public List<Recipe> list() {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
         List<Recipe> list;
+        error.reset();
+
+        if(user == null) {
+            error.setMessage("Unauthorized to read recipe.");
+            return null;
+        }
 
         try {
             transaction = session.beginTransaction();
@@ -164,11 +259,20 @@ public class RecipeTransaction {
                 transaction.rollback();
             }
             e.printStackTrace();
-            throw new HibernateException(e);
+            error.setMessage("Failed to retrieve recipe data.");
+            return null;
         }finally {
             session.close();
         }
 
         return list;
+    }
+
+    public ErrorHandler getError() {
+        return error;
+    }
+
+    public void setError(ErrorHandler error) {
+        this.error = error;
     }
 }

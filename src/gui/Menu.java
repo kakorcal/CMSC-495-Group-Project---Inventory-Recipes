@@ -15,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Scanner;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -51,7 +52,8 @@ public class Menu{
     private ArrayList<SpinnerPanel> spa;
     private ArrayList<JComponent> jpa;
     private ButtonSet recipeSet,menuSet;
-
+    private BufferedWriter output;
+    
     private SessionManager manager = null;
     private User user = null;
     private UserTransaction userTransaction = null;
@@ -80,12 +82,24 @@ public class Menu{
     synchronized public void addTabs(){
         addArray(spa,sub1);addArray(cpa,sub2);addArray(jpa,sub3);}
 
-    synchronized public void setAction(){
+    synchronized public void setAction()throws Exception{
         recipeSet.addFunction(
             new ActionListener(){
                 public void actionPerformed(ActionEvent e){
                     //cpa.get(0).setWords("This occured");
-                    setAllFalse();}},3);}
+                    setAllFalse();}},3);
+    menuSet.addFunction(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                try {
+                    output=new BufferedWriter(new FileWriter("Menu.txt"));
+                    Scanner scan=new Scanner("");
+                    while(scan.hasNext()){output.write(scan.next());}
+                    m.showMessage("Files saved successfully.");
+                    output.flush();
+                } catch (IOException ioe) {
+                    m.showMessage("File could not save.");
+                    System.err.println(ioe);
+                } finally {}}},2);
 
     synchronized public void setAllFalse(){
         if(cpa!=null){Iterator checks=cpa.iterator();
@@ -120,7 +134,7 @@ public class Menu{
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setLocation(400,200);f.setSize(800,500);f.setVisible(true);}
 
-    public static void main(String[] scarf){
+    public static void main(String[] scarf) throws Exception{
         Menu built=new Menu("Title");}}
 
 class ScrollPanel extends JPanel{

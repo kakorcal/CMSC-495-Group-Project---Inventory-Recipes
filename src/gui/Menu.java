@@ -1,4 +1,11 @@
-package.gui;
+package gui;
+
+import database.*;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -25,21 +32,37 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-public class Menu {
-    JFrame f;JLabel l;JTabbedPane tp;JOptionPane op;ButtonPanel bp1;
-    JPanel main1,main2,main3,sub1,sub2,sub3;
-    String s1="Inventory ";String s2="Recipe ";String s3="Menu ";
-    String s4=" ";String s5="\n";
-    String[] ar={"Update","Add item to inventory: "};
-    ArrayList<RecipeObject> input,menu; //input are the recipes supplied menu are the recipes selected
-    ArrayList<CheckPanel> cpa;
-    ArrayList<SpinnerPanel> spa;
-    ArrayList<JComponent> jpa;
-    ButtonSet recipeSet,menuSet;
+public class Menu{
+    //--Fields-----------------------------------//
+    private JFrame f;
+    private JLabel l;
+    private JTabbedPane tp;
+    private JOptionPane op;
+    private ButtonPanel bp1;
+    private JPanel main1,main2,main3,sub1,sub2,sub3;
+    private String s1="Inventory ";
+    private String s2="Recipe ";
+    private String s3="Menu ";
+    private String s4=" ";
+    private String s5="\n";
+    private String[] ar={"Update","Add item to inventory: "};
+    private ArrayList<RecipeObject> input,menu;
+    private ArrayList<CheckPanel> cpa;
+    private ArrayList<SpinnerPanel> spa;
+    private ArrayList<JComponent> jpa;
+    private ButtonSet recipeSet,menuSet;
+
+    private SessionManager manager = null;
+    private User user = null;
+    private UserTransaction userTransaction = null;
+    private InventoryTransaction inventoryTransaction = null;
+    private RecipeTransaction recipeTransaction = null;
+    private MenuTransaction menuTransaction = null;
+    private MenuItemTransaction menuItemTransaction = null;
     
-    public Display(String s){
+    public Menu(String s){
         f=new JFrame(s);
-        l=new JLabel("Menu Title");
+        l=new JLabel("Menu Selections");
         tp=new JTabbedPane();
         op=new JOptionPane();
         bp1=new ButtonPanel(ar,8);
@@ -49,23 +72,29 @@ public class Menu {
                 "Clear Selections");
         menuSet=new ButtonSet("Rename Menu","Save Menu","Print Menu");
         setTabs();setAction();runWindow();}
+
     synchronized public void addArray(ArrayList al,JComponent jc){
         Iterator more;if(al!=null){more=al.iterator();
         while(more.hasNext()){jc.add((JComponent)more.next());}}}
+
     synchronized public void addTabs(){
         addArray(spa,sub1);addArray(cpa,sub2);addArray(jpa,sub3);}
+
     synchronized public void setAction(){
         recipeSet.addFunction(
             new ActionListener(){
                 public void actionPerformed(ActionEvent e){
                     //cpa.get(0).setWords("This occured");
                     setAllFalse();}},3);}
+
     synchronized public void setAllFalse(){
         if(cpa!=null){Iterator checks=cpa.iterator();
         while(checks.hasNext()){
             CheckPanel temp=(CheckPanel)checks.next();temp.setBox();}}}
+
     synchronized public void setArrays(ArrayList a,ArrayList b,ArrayList c){
         spa=a;cpa=b;jpa=c;}
+
     private void setTabs(){
         //FirstTab
         tp.addTab(s1+s3,main1=new JPanel());
@@ -82,20 +111,26 @@ public class Menu {
         main3.setBorder(new TitledBorder(s3+s3));
         main3.add(menuSet);main3.add(sub3);
         f.add(tp);}
+
     public void setMenuTitle(String s1){l.setText(s1);}
-    public void postText(String s){op.showMessageDialog(op,s);}     
+
+    public void postText(String s){op.showMessageDialog(op,s);}    
+ 
     private void runWindow(){
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         f.setLocation(400,200);f.setSize(800,500);f.setVisible(true);}
+
     public static void main(String[] scarf){
-        Menu q=new Menu("Management Menu");}}
+        Menu built=new Menu("Title");}}
 
 class ScrollPanel extends JPanel{
     private JScrollPane sp;public JTextArea ta;
+
     public ScrollPanel(int x,int y){
         ta=new JTextArea(x,y);sp=new JScrollPane(ta);
         sp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         add(sp);}
+
     public void flipWhite(){setBackground(Color.WHITE);}
     public void flipGray(){setBackground(Color.GRAY);}
     public void flipDark(){setBackground(Color.DARK_GRAY);}
@@ -103,16 +138,21 @@ class ScrollPanel extends JPanel{
     public void makeText(String s){ta.setText(s);}}
 
 class ButtonPanel extends JPanel{
+
     private JButton b;private JTextField tf;private JLabel l;private JSpinner s;
     public ButtonPanel(String[] sa,int i){
+
         b=new JButton(sa[0]);tf=new JTextField(i);l=new JLabel(sa[1]);
         s=new JSpinner();s.setValue(000);
         setLayout(new FlowLayout());s.setPreferredSize(new Dimension(80,20));
         this.add(l);this.add(s);this.add(tf);this.add(b);}
+
     private void addFunction(){b.addActionListener(
             new ActionListener(){
                 public void actionPerformed(ActionEvent e){}});}
+
     public int getSpin(){return (Integer)s.getValue();}
+
     public void setSpin(int i){s.setValue(i);}}
 
 class CheckPanel extends ScrollPanel{
@@ -131,26 +171,21 @@ class CheckPanel extends ScrollPanel{
     
 class SpinnerPanel extends JPanel{;private JLabel l;private JSpinner s;
     Boolean changed;private int initial;
-    
     public SpinnerPanel(String s1,int i){
         l=new JLabel(s1);s=new JSpinner();changed=false;initial=i;
         s.setPreferredSize(new Dimension(80,20));add(l);s.setValue(i);add(s);}
-        
     private void checkSpinner(){s.addChangeListener(
             new ChangeListener(){public void stateChanged(ChangeEvent ce){
                 if((int)s.getValue()!=initial){changed=true;}}});}
-                
     public Boolean getChange(){return changed;}
     public int getSpin(){return (Integer)s.getValue();}
     public void setSpin(int i){s.setValue(i);}}
 
 class ButtonSet extends JPanel{
     private JButton b1,b2,b3;
-    
     public ButtonSet(String s1,String s2,String s3){
         b1=new JButton(s1);b2=new JButton(s2);b3=new JButton(s3);
         this.add(b1);this.add(b2);this.add(b3);}
-        
     public void addFunction(ActionListener al,int i){
         switch(i){
             case 1: b1.addActionListener(al);break;

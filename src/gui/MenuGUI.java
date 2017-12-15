@@ -93,7 +93,6 @@ public class MenuGUI {
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        runWindow();
     }
 
     synchronized public void addArray(ArrayList al, JComponent jc) {
@@ -186,17 +185,6 @@ public class MenuGUI {
 
         public void postText (String s){
             op.showMessageDialog(op, s);
-        }
-
-//        private void runWindow () {
-//            f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//            f.setLocation(400, 200);
-//            f.setSize(800, 500);
-//            f.setVisible(true);
-//        }
-
-        public static void main (String[]scarf) throws Exception {
-            Menu built = new Menu("Title");
         }
     }
 

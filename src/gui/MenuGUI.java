@@ -75,6 +75,7 @@ public class MenuGUI {
     public MenuGUI() {
         if(initializeTransactions()) {
             f = new JPanel();
+            f.setSize(800, 500);
             l = new JLabel("Menu Selections");
             tp = new JTabbedPane();
             op = new JOptionPane();
@@ -291,7 +292,6 @@ public class MenuGUI {
                     new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             System.out.println("ADD INVENTORY BUTTON CLICKED");
-
                         }
                     });
         }

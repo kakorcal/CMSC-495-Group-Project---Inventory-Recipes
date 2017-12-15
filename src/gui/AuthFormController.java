@@ -67,6 +67,7 @@ public class AuthFormController {
             Stage primaryStage = (Stage) usernameField.getScene().getWindow();
             Parent menuGUI = FXMLLoader.load(getClass().getResource("/gui/menuGUI.fxml"));
             primaryStage.setScene(new Scene(menuGUI));
+            primaryStage.centerOnScreen();
             primaryStage.setTitle("Restaurant Management Application");
         }
     }

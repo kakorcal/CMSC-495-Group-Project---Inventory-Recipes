@@ -11,7 +11,7 @@
               style="-fx-font-size: 17px; -fx-fill: #0aa970; -fx-translate-y: 20px;" fx:id="loadingMessage"/>
     </top>
     <center>
-        <Pane fx:id="menuPane" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="510" prefHeight="500">
+        <Pane fx:id="menuPane" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="800" prefHeight="500">
         </Pane>
     </center>
 </BorderPane>

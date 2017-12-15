@@ -52,7 +52,7 @@ public class MenuGUI {
     private String s3 = "Menu ";
     private String s4 = " ";
     private String s5 = "\n";
-    private String[] ar = {"Update", "Add item to inventory: "};
+    private String[] ar = {"Add", "Add item to inventory: "};
     private ArrayList<RecipeObject> input, menu;
     private ArrayList<CheckPanel> cpa;
     private ArrayList<SpinnerPanel> spa;
@@ -73,26 +73,67 @@ public class MenuGUI {
     }
 
     public MenuGUI() {
-        f = new JPanel();
-        l = new JLabel("Menu Selections");
-        tp = new JTabbedPane();
-        op = new JOptionPane();
-        bp1 = new ButtonPanel(ar, 8);
-        cpa = new ArrayList<>();
-        spa = new ArrayList<>();
-        jpa = new ArrayList<>();
-        sub1 = new JPanel();
-        sub2 = new JPanel();
-        sub3 = new JPanel();
-        recipeSet = new ButtonSet("Generate Recipes", "Generate Menu",
-                "Clear Selections");
-        menuSet = new ButtonSet("Rename Menu", "Save Menu", "Print Menu");
-        setTabs();
-        try {
-            setAction();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if(initializeTransactions()) {
+            f = new JPanel();
+            l = new JLabel("Menu Selections");
+            tp = new JTabbedPane();
+            op = new JOptionPane();
+            bp1 = new ButtonPanel(ar, 8);
+            cpa = new ArrayList<>();
+            spa = new ArrayList<>();
+            jpa = new ArrayList<>();
+            sub1 = new JPanel();
+            sub2 = new JPanel();
+            sub3 = new JPanel();
+            recipeSet = new ButtonSet("Generate Recipes", "Generate Menu",
+                    "Clear Selections");
+            menuSet = new ButtonSet("Rename Menu", "Save Menu", "Print Menu");
+            setTabs();
+            try {
+                setAction();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }else {
+            main1.add(new JLabel("Failed to retrieve user data."));
         }
+    }
+
+    private Boolean initializeTransactions() {
+        RestaurantApp app = RestaurantApp.getInstance();
+        manager = app.getSessionManager();
+        userTransaction = app.getUserTransaction();
+        user = app.getUser();
+        inventoryTransaction = app.getInventoryTransaction();
+        recipeTransaction = app.getRecipeTransaction();
+        menuTransaction = app.getMenuTransaction();
+        menuItemTransaction = app.getMenuItemTransaction();
+
+        if(userTransaction == null || user == null) {
+            return false;
+        }
+
+        if(inventoryTransaction == null) {
+            app.setInventoryTransaction(new InventoryTransaction(manager, user));
+            inventoryTransaction = app.getInventoryTransaction();
+        }
+
+        if(recipeTransaction == null) {
+            app.setRecipeTransaction(new RecipeTransaction(manager, user));
+            recipeTransaction = app.getRecipeTransaction();
+        }
+
+        if(menuTransaction == null) {
+            app.setMenuTransaction(new MenuTransaction(manager, user));
+            menuTransaction = app.getMenuTransaction();
+        }
+
+        if(menuItemTransaction == null) {
+            app.setMenuItemTransaction(new MenuItemTransaction(manager, user));
+            menuItemTransaction = app.getMenuItemTransaction();
+        }
+        
+        return true;
     }
 
     synchronized public void addArray(ArrayList al, JComponent jc) {
@@ -115,6 +156,7 @@ public class MenuGUI {
         recipeSet.addFunction(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
+                        System.out.println("RECIPE SET ACTION PERFORMED");
                         //cpa.get(0).setWords("This occured");
                         setAllFalse();
                     }
@@ -124,6 +166,8 @@ public class MenuGUI {
             Message m = new Message();
 
             public void actionPerformed(ActionEvent ae) {
+                System.out.println("MENU SET ACTION PERFORMED");
+
                 try {
                     output = new BufferedWriter(new FileWriter("Menu.txt"));
                     Scanner scan = new Scanner("");
@@ -230,6 +274,7 @@ public class MenuGUI {
         public ButtonPanel(String[] sa, int i) {
 
             b = new JButton(sa[0]);
+            addFunction();
             tf = new JTextField(i);
             l = new JLabel(sa[1]);
             s = new JSpinner();
@@ -246,6 +291,9 @@ public class MenuGUI {
             b.addActionListener(
                     new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
+                            System.out.println("ADD INVENTORY BUTTON CLICKED");
+
+
                         }
                     });
         }
@@ -275,6 +323,7 @@ public class MenuGUI {
             cb.addChangeListener(
                     new ChangeListener() {
                         public void stateChanged(ChangeEvent ce) {
+                            System.out.println("CHECK BOX CLICKED");
                             if (cb.isSelected()) {
                                 flipGray();
                                 changed = true;
@@ -329,6 +378,7 @@ public class MenuGUI {
             s.addChangeListener(
                     new ChangeListener() {
                         public void stateChanged(ChangeEvent ce) {
+                            System.out.println("SPINNING STATE CHANGED.");
                             if ((int) s.getValue() != initial) {
                                 changed = true;
                             }
@@ -356,6 +406,10 @@ public class MenuGUI {
             b1 = new JButton(s1);
             b2 = new JButton(s2);
             b3 = new JButton(s3);
+            System.out.println("ADDING EVENT LISTENERS TO THE FOLLOWING");
+            System.out.println(s1);
+            System.out.println(s2);
+            System.out.println(s3);
             this.add(b1);
             this.add(b2);
             this.add(b3);

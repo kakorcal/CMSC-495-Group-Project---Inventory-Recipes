@@ -1,5 +1,10 @@
 package api;
 
+import database.Inventory;
+import database.InventoryTransaction;
+import database.SessionManager;
+import database.UserTransaction;
+import gui.RestaurantApp;
 import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -13,6 +18,7 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Name: Dustin Summers
@@ -39,27 +45,63 @@ public class RecipeFinderController {
      * findRecipes()
      * Button Controller.  Couple of steps here:
      * 1) Check To make sure we have internet
-     * 2) If we have internet, pull in the recipe list from our desired URL
+     * 2) If we have internet, pull in the recipe list from our desired URL.
      * <p>
      */
     @FXML
     private void findRecipes() {
         System.out.println("Finding recipes!");
 
-        //TODO:At this time, the URL is a hardcoded String.  Build in functionality to adjust this dynamically based on user criteria/ingredients.
-        String recipeURL = "https://food2fork.com/api/search?key=304840c6b26d5a8c28da4ff2661b8e85&q=egg,milk,floursort=r";
+        // 1. get the RestaurantApp singleton
+        RestaurantApp app = RestaurantApp.getInstance();
 
-        System.out.println("Passing in RecipeURL: " + recipeURL);
+        InventoryTransaction inventoryTransaction = new InventoryTransaction(app.getSessionManager(), app.getUser());
 
-        //Extract Recipes from Given URL and create ArrayList of all Recipes
-        recipes = RecipesQuery.extractRecipes(recipeURL);
+        inventoryTransaction.create(new Inventory("Milk", 2));
+        inventoryTransaction.create(new Inventory("Bread", 2));
+        inventoryTransaction.create(new Inventory("Eggs", 2));
+        inventoryTransaction.create(new Inventory("Flour", 2));
+        //inventoryTransaction.create(new Inventory("Blood", 2));
+        //inventoryTransaction.create(new Inventory("Pumpkin", 2));
+        inventoryTransaction.create(new Inventory("Chicken", 2));
+        //inventoryTransaction.create(new Inventory("Steak", 2));
+//        inventoryTransaction.create(new Inventory("Potato", 2));
+//        inventoryTransaction.create(new Inventory("Rhino", 2));
+//        inventoryTransaction.create(new Inventory("Panda", 2));
+//        inventoryTransaction.create(new Inventory("Peanut Butter", 2));
 
-        //Ensure Recipes were returned
-        if (recipes.size() <= 0) {
-            System.out.println("No recipes returned!");
-            message.showMessage("No Recipes", "No Recipes Returned", "No Recipes based off of stock!  Acquire more items!", Alert.AlertType.ERROR);
-        } else {
-            displayRecipes(recipes);
+        List<Inventory> inventoryList = inventoryTransaction.list();
+
+        if(inventoryList.size()==0)
+        {
+            message.showMessage("Stock is Low", "No Inventory", "You don't have any inventory to pull from! Please add inventory to look up recipes.", Alert.AlertType.INFORMATION);
+        }
+
+        //Else, build List of Recipe's based off of database
+        else
+        {
+            String recipeURL = "https://food2fork.com/api/search?key=304840c6b26d5a8c28da4ff2661b8e85&q=";
+            StringBuilder ingredients = new StringBuilder();
+            for (int i = 0; i < inventoryList.size(); i++) {
+                if(i==0) {
+                    ingredients = new StringBuilder(inventoryList.get(i).getName());
+                } else {
+                    ingredients.append(",").append(inventoryList.get(i).getName());
+                }
+            }
+            recipeURL += ingredients;
+
+            //Send up the recipeURL!
+            recipes = RecipesQuery.extractRecipes(recipeURL);
+            System.out.println("Passing in RecipeURL: " + recipeURL);
+
+            //Ensure Recipes were returned
+             if (recipes.size() <= 0) {
+                 System.out.println("No recipes returned!");
+                 message.showMessage("No Recipes", "No Recipes Returned", "No Recipes based off of stock!  Acquire more items!", Alert.AlertType.ERROR);
+             } else {
+                 displayRecipes(recipes);
+             }
         }
     }
 

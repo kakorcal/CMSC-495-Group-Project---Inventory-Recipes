@@ -47,7 +47,7 @@ public class RecipesQuery {
               Right now, I'm only looking over the first ten Recipes.
               By default, it returns 30.
              */
-            for(int i=0; i<10; i++){
+            for(int i=0; i<recipeArrays.length(); i++){
                 //Pull Individual Recipe
                 JSONObject recipeJSONSample = recipeArrays.getJSONObject(i);
 

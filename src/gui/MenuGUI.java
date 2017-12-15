@@ -31,6 +31,16 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
+
 public class MenuGUI {
     //--Fields-----------------------------------//
     private JPanel f;
@@ -160,16 +170,11 @@ public class MenuGUI {
 
         menuSet.addFunction(new ActionListener() {
             Message m = new Message();
-
             public void actionPerformed(ActionEvent ae) {
                 System.out.println("MENU SET ACTION PERFORMED");
-
-                try {
                     String fileName="menuLog.txt";
                     writeFile=new Write(fileName,"test");
-                    }
-             
-                
+                  
             }
         }, 2);
     }

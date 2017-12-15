@@ -3,6 +3,7 @@ package gui;
 import api.Message;
 import api.RecipeObject;
 import database.*;
+import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -281,18 +282,38 @@ public class MenuGUI {
             this.add(b);
         }
 
-        public ButtonPanel(String inventory, int quantity) {
+        public ButtonPanel(long id, String inventory, int quantity) {
             JButton updateButton = new JButton("Update");
-            JTextField updateInventoryField = new JTextField(8);
-            JLabel inventoryLabel = new JLabel(inventory);
+            JButton deleteButton = new JButton("Delete");
+            JTextField inventoryId = new JTextField(Long.toString(id));
+            JTextField updateInventoryField = new JTextField(inventory, 6);
             JSpinner updateSpinner = new JSpinner();
             updateSpinner.setValue(quantity);
             setLayout(new FlowLayout());
             updateSpinner.setPreferredSize(new Dimension(80, 20));
-            this.add(inventoryLabel);
+
+            updateButton.addActionListener(
+                    new ActionListener() {
+                        public void actionPerformed(ActionEvent e) {
+                            System.out.println("UPDATE INVENTORY BUTTON CLICKED");
+                            sub1.revalidate();
+                        }
+                    });
+
+            deleteButton.addActionListener(
+                    new ActionListener() {
+                        public void actionPerformed(ActionEvent e) {
+                            System.out.println("DELETE INVENTORY BUTTON CLICKED");
+                            sub1.revalidate();
+                        }
+                    });
+
+            this.add(inventoryId);
+            inventoryId.setVisible(false);
             this.add(updateSpinner);
             this.add(updateInventoryField);
             this.add(updateButton);
+            this.add(deleteButton);
         }
 
         private void addFunction() {
@@ -300,8 +321,33 @@ public class MenuGUI {
                     new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             System.out.println("ADD INVENTORY BUTTON CLICKED");
-                            sub1.add(new ButtonPanel("hello", 2));
-                            sub1.revalidate();
+                            int quantity = -1;
+
+                            try {
+                                System.out.println("" + s.getValue());
+                                quantity = Integer.parseInt("" + s.getValue());
+                            }catch (Exception err) {
+                                Platform.runLater(() -> {
+                                    new Message().showMessage("Error", "Invalid quantity", "Please enter a valid integer.", Alert.AlertType.WARNING);
+                                });
+                            }
+
+                            if(quantity >= 0) {
+                                String name = tf.getText();
+                                Inventory inventory = new Inventory(name, quantity);
+                                Inventory newInventory = inventoryTransaction.create(inventory);
+
+                                if(inventoryTransaction.getError().hasError()) {
+                                    Platform.runLater(() -> {
+                                        new Message().showMessage("Error", null, inventoryTransaction.getError().getMessage(), Alert.AlertType.WARNING);
+                                    });
+                                }else {
+                                    sub1.add(new ButtonPanel(newInventory.getId(), newInventory.getName(), newInventory.getQuantity()));
+                                    Platform.runLater(() -> {
+                                        new Message().showMessage("Success", null, "Successfully created inventory.", Alert.AlertType.INFORMATION);
+                                    });
+                                }
+                            }
                         }
                     });
         }

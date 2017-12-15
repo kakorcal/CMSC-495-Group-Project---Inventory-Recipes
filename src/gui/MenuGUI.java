@@ -1,5 +1,6 @@
 package gui;
 
+import api.RecipeObject;
 import database.*;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -32,7 +33,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-public class Menu{
+public class MenuGUI{
     //--Fields-----------------------------------//
     private JFrame f;
     private JLabel l;
@@ -60,7 +61,7 @@ public class Menu{
     private MenuTransaction menuTransaction = null;
     private MenuItemTransaction menuItemTransaction = null;
     
-    public Menu(String s){
+    public MenuGUI(String s){
         f=new JFrame(s);
         l=new JLabel("Menu Selections");
         tp=new JTabbedPane();

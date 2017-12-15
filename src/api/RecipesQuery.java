@@ -74,23 +74,6 @@ public class RecipesQuery {
         return recipes;
     }
 
-    public static void extractDirections(String requestUrl){
-        URL url = createUrl(requestUrl);
-        String jsonResponse = null;
-        try{
-            //Make request to website and pull in the result JSON
-            jsonResponse = makeHttpRequest(url);
-
-            //Assign overall JSON Object (for details on teh returned JSON, view JSON Parser with given URL)
-            JSONObject directionsREsponse = new JSONObject(jsonResponse);
-
-
-
-        } catch (JSONException | IOException e){
-            e.printStackTrace();
-        }
-    }
-
     /**
      * Create a URL String to be queried from StringURL Passed in
      * @param stringUrl String to be converted to URL

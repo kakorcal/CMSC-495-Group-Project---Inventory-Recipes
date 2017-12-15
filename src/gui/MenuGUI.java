@@ -230,7 +230,6 @@ public class MenuGUI {
         public void postText (String s){
             op.showMessageDialog(op, s);
         }
-    }
 
     class ScrollPanel extends JPanel {
         private JScrollPane sp;
@@ -292,7 +291,6 @@ public class MenuGUI {
                     new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             System.out.println("ADD INVENTORY BUTTON CLICKED");
-
 
                         }
                     });
@@ -357,7 +355,6 @@ public class MenuGUI {
     }
 
     class SpinnerPanel extends JPanel {
-        ;
         private JLabel l;
         private JSpinner s;
         Boolean changed;
@@ -429,3 +426,5 @@ public class MenuGUI {
             }
         }
     }
+
+}

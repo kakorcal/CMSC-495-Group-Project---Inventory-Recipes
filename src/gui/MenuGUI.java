@@ -69,6 +69,12 @@ public class MenuGUI {
     private RecipeTransaction recipeTransaction = null;
     private MenuTransaction menuTransaction = null;
     private MenuItemTransaction menuItemTransaction = null;
+    
+    private Message m;
+    private BufferedWriter output;
+    private OutputStream out;
+    private Path path;
+    private byte[] data;
 
     public JPanel getMainPanel() {
         return f;
@@ -173,7 +179,7 @@ public class MenuGUI {
             public void actionPerformed(ActionEvent ae) {
                 System.out.println("MENU SET ACTION PERFORMED");
                     String fileName="menuLog.txt";
-                    writeFile=new Write();
+                    writeFile=new Write(fileName,"");
                   
             }
         }, 2);

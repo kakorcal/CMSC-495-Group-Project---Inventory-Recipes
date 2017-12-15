@@ -293,6 +293,7 @@ public class MenuGUI {
             updateSpinner.setValue(quantity);
             setLayout(new FlowLayout());
             updateSpinner.setPreferredSize(new Dimension(80, 20));
+            ButtonPanel self = this;
 
             updateButton.addActionListener(
                     new ActionListener() {
@@ -337,6 +338,22 @@ public class MenuGUI {
                     new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             System.out.println("DELETE INVENTORY BUTTON CLICKED");
+
+                            inventoryTransaction.delete(id);
+
+                            if(inventoryTransaction.getError().hasError()) {
+                                Platform.runLater(() -> {
+                                    new Message().showMessage("Error", null, inventoryTransaction.getError().getMessage(), Alert.AlertType.WARNING);
+                                });
+                            }else {
+                                sub1.remove(self);
+                                sub1.revalidate();
+                                Platform.runLater(() -> {
+                                    new Message().showMessage("Success", null, "Successfully deleted inventory.", Alert.AlertType.INFORMATION);
+                                });
+                            }
+
+
                             sub1.revalidate();
                         }
                     });

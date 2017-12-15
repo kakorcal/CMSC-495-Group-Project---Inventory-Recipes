@@ -167,7 +167,6 @@ public class MenuGUI {
                 }, 3);
 
         menuSet.addFunction(new ActionListener() {
-            Message m = new Message();
             public void actionPerformed(ActionEvent ae) {
                 System.out.println("MENU SET ACTION PERFORMED");
                     String fileName="menuLog.txt";
@@ -553,7 +552,6 @@ public class MenuGUI {
     }
 }
 class Write {
-    private Message m;
     private BufferedWriter output;
     private OutputStream out;
     private Path path;
@@ -566,11 +564,9 @@ class Write {
                     Files.newOutputStream(path,CREATE,APPEND));
             out.write(data,0,data.length);
             out.flush();
-            //m.showMessage("Files saved successfully.");
             System.out.println("File saved.");
         } 
         catch (IOException ioe) {
-            //m.showMessage("File could not save.");
             System.out.println("File could not save.");
             System.err.println(ioe);} 
         finally {}}  

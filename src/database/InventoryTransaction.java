@@ -156,8 +156,11 @@ public class InventoryTransaction {
                 List<Inventory> list = query.list();
 
                 if(!list.isEmpty()) {
-                    error.setMessage("Cannot have duplicate inventory names.");
-                    return null;
+                    Inventory entry = list.get(0);
+                    if(entry.getQuantity() == inventory.getQuantity()) {
+                        error.setMessage("Cannot have duplicate inventory names.");
+                        return null;
+                    }
                 }
 
                 newInventory.setName(inventory.getName());

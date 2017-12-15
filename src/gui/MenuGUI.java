@@ -286,6 +286,8 @@ public class MenuGUI {
             JButton updateButton = new JButton("Update");
             JButton deleteButton = new JButton("Delete");
             JTextField inventoryId = new JTextField(Long.toString(id));
+            JTextField inventoryName = new JTextField(inventory);
+            JTextField inventoryQuantity = new JTextField(Integer.toString(quantity));
             JTextField updateInventoryField = new JTextField(inventory, 6);
             JSpinner updateSpinner = new JSpinner();
             updateSpinner.setValue(quantity);
@@ -296,7 +298,38 @@ public class MenuGUI {
                     new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             System.out.println("UPDATE INVENTORY BUTTON CLICKED");
-                            sub1.revalidate();
+                            int quantity = -1;
+
+                            try {
+                                quantity = Integer.parseInt("" + updateSpinner.getValue());
+                            }catch (Exception err) {
+                                Platform.runLater(() -> {
+                                    new Message().showMessage("Error", "Invalid quantity", "Please enter a valid integer.", Alert.AlertType.WARNING);
+                                });
+                            }
+
+                            if(quantity >= 0) {
+                                String name = updateInventoryField.getText();
+                                Inventory inventory = new Inventory(id, name, quantity);
+                                Inventory newInventory = inventoryTransaction.update(inventory);
+
+                                if(inventoryTransaction.getError().hasError()) {
+                                    updateInventoryField.setText(inventoryName.getText());
+                                    updateSpinner.setValue(updateSpinner.getValue());
+                                    Platform.runLater(() -> {
+                                        new Message().showMessage("Error", null, inventoryTransaction.getError().getMessage(), Alert.AlertType.WARNING);
+                                    });
+                                }else {
+                                    updateInventoryField.setText(newInventory.getName());
+                                    updateSpinner.setValue(newInventory.getQuantity());
+                                    inventoryName.setText(newInventory.getName());
+                                    inventoryQuantity.setText(Integer.toString(newInventory.getQuantity()));
+                                    sub1.revalidate();
+                                    Platform.runLater(() -> {
+                                        new Message().showMessage("Success", null, "Successfully updated inventory.", Alert.AlertType.INFORMATION);
+                                    });
+                                }
+                            }
                         }
                     });
 
@@ -309,7 +342,11 @@ public class MenuGUI {
                     });
 
             this.add(inventoryId);
+            this.add(inventoryName);
+            this.add(inventoryQuantity);
             inventoryId.setVisible(false);
+            inventoryName.setVisible(false);
+            inventoryQuantity.setVisible(false);
             this.add(updateSpinner);
             this.add(updateInventoryField);
             this.add(updateButton);
@@ -324,7 +361,6 @@ public class MenuGUI {
                             int quantity = -1;
 
                             try {
-                                System.out.println("" + s.getValue());
                                 quantity = Integer.parseInt("" + s.getValue());
                             }catch (Exception err) {
                                 Platform.runLater(() -> {
@@ -343,6 +379,7 @@ public class MenuGUI {
                                     });
                                 }else {
                                     sub1.add(new ButtonPanel(newInventory.getId(), newInventory.getName(), newInventory.getQuantity()));
+                                    sub1.revalidate();
                                     Platform.runLater(() -> {
                                         new Message().showMessage("Success", null, "Successfully created inventory.", Alert.AlertType.INFORMATION);
                                     });

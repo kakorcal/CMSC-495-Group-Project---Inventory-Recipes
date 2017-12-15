@@ -31,7 +31,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -70,11 +69,7 @@ public class MenuGUI {
     private MenuTransaction menuTransaction = null;
     private MenuItemTransaction menuItemTransaction = null;
     
-    private Message m;
-    private BufferedWriter output;
-    private OutputStream out;
-    private Path path;
-    private byte[] data;
+    
 
     public JPanel getMainPanel() {
         return f;
@@ -179,7 +174,8 @@ public class MenuGUI {
             public void actionPerformed(ActionEvent ae) {
                 System.out.println("MENU SET ACTION PERFORMED");
                     String fileName="menuLog.txt";
-                    writeFile=new Write(fileName,"");
+                    writeFile=new Write();
+                    writeFile.saveString(fileName," ");
                   
             }
         }, 2);

@@ -151,11 +151,17 @@ public class RecipeFinderController {
     private void generateMenu(){
         System.out.println("Generate menu pressed!");
         myMenu = new generateMenu();
+        myMenu.setVisible(true);
+        myMenu.setSize(400,600);
+        myMenu.setLayout(new FlowLayout());
+
         for(int i = 0; i<recipes.size(); i++){
             if(recipes.get(i).isCheckBoxChecked()) {
-                myMenu.addItem(recipes.get(i).getRecipeTitle());
+                myMenu.addItem(myMenu, recipes.get(i).getRecipeTitle());
             }
         }
+
+
     }
 
     /**

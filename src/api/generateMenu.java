@@ -2,29 +2,58 @@ package api;
 
 import javax.swing.*;
 import java.awt.*;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
-public class generateMenu {
+public class generateMenu extends JFrame{
 
-    private JFrame menuFrame;
-    private JPanel tempPanel;
-    private JTextArea textArea;
+    JFrame menuFrame = new JFrame();
+    JPanel tempPanel;
+    JTextArea ItemTitle;
+    DecimalFormat df = new DecimalFormat("#.##");
+    ArrayList<String> descriptions = new ArrayList<String>();
+    private Random randomGenerator;
+
+
 
     public generateMenu(){
-        JFrame menuFrame = new JFrame ("Menu");
-        menuFrame.setDefaultCloseOperation (JFrame.EXIT_ON_CLOSE);
-        menuFrame.setSize(600,600);
-        menuFrame.pack();
-        menuFrame.setVisible (true);
-        System.out.println("Completed Frame initiliaztion");
+        super("Restraunt Menu");
+        randomGenerator = new Random();
+        df.setRoundingMode(RoundingMode.FLOOR);
+        descriptions.add("You'll eat this till you drop!");
+        descriptions.add("Our favorite dish!");
+        descriptions.add("To die for!");
+        descriptions.add("You cant find this at home!");
+        descriptions.add("This will beat your grandmas!");
+        descriptions.add("Have fun recreating this masterpiece!");
+        descriptions.add("We know you would be back for this delectable item!");
+        descriptions.add("You'll never get enough!");
+        descriptions.add("Don't miss this!");
+        descriptions.add("Mhhhhhhhhhhhmmmmmmmmmmmmmm!");
+        descriptions.add("You'll weigh 5 more pounds after this dish!");
+        descriptions.add("Hope your pants are loose!");
+        descriptions.add("One for the memories!");
+        descriptions.add("You'll want to Instagram this one!");
+
     }
 
-    public void addItem(String itemName){
+    public void addItem(JFrame frame, String itemName){
+        double randomPrice = new Double(df.format(ThreadLocalRandom.current().nextDouble(10, 20)));
         tempPanel = new JPanel(new BorderLayout());
-        textArea = new JTextArea(itemName,5, 20);
-        tempPanel.add(textArea);
-        System.out.println("Attempting to create a panel with a text area of: " + itemName);
-        textArea.setEditable(false);
-        menuFrame.add(tempPanel);
+        tempPanel.setSize(600,50);
+        int index = randomGenerator.nextInt(descriptions.size());
+        System.out.println("Random Index " + index);
+        String description = descriptions.get(index);
+        descriptions.remove(index);
+        ItemTitle = new JTextArea("Name: " + itemName + "\n Price: " + randomPrice + "\n Description: " + description,3, 35);
+        //ItemTitle = new JTextArea("Name: " + itemName + "\n Price: " + randomPrice,3, 25);
+        tempPanel.add(ItemTitle);
+        ItemTitle.setEditable(false);
+        tempPanel.setVisible(true);
+        frame.add(tempPanel);
     }
 
 

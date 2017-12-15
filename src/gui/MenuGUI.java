@@ -50,7 +50,7 @@ public class MenuGUI {
     private ArrayList<SpinnerPanel> spa;
     private ArrayList<JComponent> jpa;
     private ButtonSet recipeSet, menuSet;
-    private BufferedWriter output;
+    private Write writeFile;
 
     private SessionManager manager = null;
     private User user = null;
@@ -165,18 +165,11 @@ public class MenuGUI {
                 System.out.println("MENU SET ACTION PERFORMED");
 
                 try {
-                    output = new BufferedWriter(new FileWriter("Menu.txt"));
-                    Scanner scan = new Scanner("");
-                    while (scan.hasNext()) {
-                        output.write(scan.next());
+                    String fileName="menuLog.txt";
+                    writeFile=new Write(fileName,"test");
                     }
-                    m.showMessage("Files saved.", "File Saved Successfully", "Files saved.  You may continue on.", Alert.AlertType.INFORMATION);
-                    output.flush();
-                } catch (IOException ioe) {
-                    m.showMessage("Files saved.", "File Saved Successfully", "Files saved.  You may continue on.", Alert.AlertType.INFORMATION);
-                    System.err.println(ioe);
-                } finally {
-                }
+             
+                
             }
         }, 2);
     }
@@ -554,5 +547,25 @@ public class MenuGUI {
             }
         }
     }
-
+}
+class Write {
+    private Message m;
+    private BufferedWriter output;
+    private OutputStream out;
+    private Path path;
+    private byte[] data;
+    synchronized public void saveString(String s1,String s2){
+        try {
+            path = Paths.get("./"+s1);
+            data=s2.getBytes();
+            out = new BufferedOutputStream(
+                    Files.newOutputStream(path,CREATE,APPEND));
+            out.write(data,0,data.length);
+            out.flush();
+            m.showMessage("Files saved successfully.");
+        } 
+        catch (IOException ioe) {
+            m.showMessage("File could not save.");
+            System.err.println(ioe);} 
+        finally {}}  
 }

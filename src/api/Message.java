@@ -8,6 +8,13 @@ public class Message {
      */
     public Message(){ }
 
+    /**
+     * Simple way to display messages for use within the API
+     * @param title
+     * @param subject
+     * @param body
+     * @param alertType
+     */
     public void showMessage(String title, String subject, String body, Alert.AlertType alertType){
              Alert alert = new Alert(alertType);
              alert.setTitle(title);

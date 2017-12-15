@@ -8,7 +8,10 @@ import javafx.scene.layout.Pane;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.net.InetAddress;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 /**
@@ -45,34 +48,18 @@ public class RecipeFinderController {
 
         //TODO:At this time, the URL is a hardcoded String.  Build in functionality to adjust this dynamically based on user criteria/ingredients.
         String recipeURL = "https://food2fork.com/api/search?key=304840c6b26d5a8c28da4ff2661b8e85&q=egg,milk,floursort=r";
-        try {
 
-            //Standard Internet Poll.  We should determine if this is the best method to check internet connectivity.
-            InetAddress address = InetAddress.getByName("www.google.com");
+        System.out.println("Passing in RecipeURL: " + recipeURL);
 
-            //Do a standard internet query to determine if we have network access.
-            //This essentially sends a "ping" request to the site given
+        //Extract Recipes from Given URL and create ArrayList of all Recipes
+        recipes = RecipesQuery.extractRecipes(recipeURL);
 
-            if (!address.isReachable(200)) {
-                System.out.println("No Network Access!");
-                message.showMessage("No Network Access", "No Network Access", "We don't have internet!", Alert.AlertType.ERROR);
-                return;
-            }
-                System.out.println("Passing in RecipeURL: " + recipeURL);
-
-                //Extract Recipes from Given URL and create ArrayList of all Recipes
-                recipes = RecipesQuery.extractRecipes(recipeURL);
-
-                //Ensure Recipes were returned
-                if (recipes.size() <= 0) {
-                    System.out.println("No recipes returned!");
-                    message.showMessage("No Recipes", "No Recipes Returned", "No Recipes based off of stock!  Acquire more items!", Alert.AlertType.ERROR);
-                } else {
-                    displayRecipes(recipes);
-                }
-            }
-        catch(java.io.IOException e){
-            e.printStackTrace();
+        //Ensure Recipes were returned
+        if (recipes.size() <= 0) {
+            System.out.println("No recipes returned!");
+            message.showMessage("No Recipes", "No Recipes Returned", "No Recipes based off of stock!  Acquire more items!", Alert.AlertType.ERROR);
+        } else {
+            displayRecipes(recipes);
         }
     }
 
@@ -87,37 +74,43 @@ public class RecipeFinderController {
     private void displayRecipes (ArrayList < RecipeObject > recipes) {
         final SwingNode swingNode = new SwingNode();
         createSwingNodeContent(swingNode, recipes);
-
-        if (recipePane == null) {
-            message.showMessage("G**D****", "Yup, shit broke", "I don't know anymore", Alert.AlertType.ERROR);
-        }
         recipePane.getChildren().add(swingNode);
-
-        if (borderPane == null) {
-            new Message().showMessage("Error", "No Border Pane!", "Can't display borderPane!", Alert.AlertType.ERROR);
-        }
-
         borderPane.setCenter(recipePane);
     }
 
+    /**
+     * Launches web-page based off of selected recipes
+     */
     @FXML
     private void getDirections(){
         System.out.println("Get recipes pushed");
         //Pull in the Recipes from our ArrayList RecipeList
         for(int i = 0; i<recipes.size(); i++){
             if(recipes.get(i).isCheckBoxChecked()) {
-                System.out.println("User selected: " + recipes.get(i).getRecipeTitle() +"\nFood ID: " +recipes.get(i).getRecipeID() +"\nURL: " + recipes.get(i).getRecipeURL());
+                if(Desktop.isDesktopSupported()){
+                    try {
+                        Desktop.getDesktop().browse(new URI(recipes.get(i).getRecipeURL()));
+                    } catch (IOException | URISyntaxException e) {
+                        e.printStackTrace();
+                    }
+                } else{
+                    message.showMessage("Error", "Unable to Open Browser",
+                            "Your Operating System is not supported.  Please browse to the following website to view the directions" + recipes.get(i).getRecipeURL(),
+                            Alert.AlertType.INFORMATION);
+                }
             }
         }
     }
 
+    /**
+     * Generates a menu based off of selected items
+     */
     @FXML
     private void generateMenu(){
         System.out.println("Generate menu pressed!");
         myMenu = new generateMenu();
         for(int i = 0; i<recipes.size(); i++){
             if(recipes.get(i).isCheckBoxChecked()) {
-                //System.out.println("User selected: " + recipes.get(i).getRecipeTitle() +"\nFood ID: " +recipes.get(i).getRecipeID() +"\nURL: " + recipes.get(i).getRecipeURL());
                 myMenu.addItem(recipes.get(i).getRecipeTitle());
             }
         }

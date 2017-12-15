@@ -239,6 +239,7 @@ public class InventoryTransaction {
         Session session = sessionFactory.openSession();
         Transaction transaction = null;
         List<Inventory> list;
+        error.reset();
 
         if(user == null) {
             error.setMessage("Unauthorized to read inventory.");

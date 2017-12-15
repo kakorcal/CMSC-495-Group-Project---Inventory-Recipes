@@ -24,6 +24,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Scanner;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -203,6 +204,7 @@ public class MenuGUI {
             main1.add(bp1);
             main1.setLayout(new BoxLayout(main1, BoxLayout.Y_AXIS));
             sub1.setLayout(new GridLayout(10, 1, 5, 5));
+            getInventory(sub1);
             main1.add(sub1);
             //SecondTab
             tp.addTab(s2 + s3, main2 = new JPanel());
@@ -217,6 +219,22 @@ public class MenuGUI {
             main3.add(menuSet);
             main3.add(sub3);
             f.add(tp);
+        }
+
+        private void getInventory(JComponent container) {
+            List<Inventory> inventories = inventoryTransaction.list();
+
+            if(inventoryTransaction.getError().hasError()) {
+                Platform.runLater(() -> {
+                    new Message().showMessage("Error", null, inventoryTransaction.getError().getMessage(), Alert.AlertType.WARNING);
+                });
+            }else {
+                for(Inventory inventory: inventories) {
+                    ButtonPanel inventoryPanel = new ButtonPanel(inventory.getId(), inventory.getName(), inventory.getQuantity());
+                    container.add(inventoryPanel);
+                }
+            }
+
         }
 
         public void setMenuTitle (String s1){

@@ -22,19 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Scanner;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -72,10 +60,13 @@ public class MenuGUI {
         return f;
     }
 
+    public void setMainPanelLayout() {
+        f.setLayout(new BoxLayout(f, BoxLayout.Y_AXIS));
+    }
+
     public MenuGUI() {
         if(initializeTransactions()) {
             f = new JPanel();
-            f.setSize(800, 500);
             l = new JLabel("Menu Selections");
             tp = new JTabbedPane();
             op = new JOptionPane();
@@ -292,6 +283,7 @@ public class MenuGUI {
                     new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             System.out.println("ADD INVENTORY BUTTON CLICKED");
+                            sub1.add(new JButton("hello"));
                         }
                     });
         }

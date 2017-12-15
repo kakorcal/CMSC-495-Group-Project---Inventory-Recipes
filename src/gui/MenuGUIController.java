@@ -8,6 +8,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 
 public class MenuGUIController {
     @FXML private BorderPane container;
@@ -29,7 +31,11 @@ public class MenuGUIController {
             @Override
             public void run() {
                 MenuGUI gui = new MenuGUI();
-                swingNode.setContent(gui.getMainPanel());
+                gui.setMainPanelLayout();
+                JScrollPane scrollPane = new JScrollPane(gui.getMainPanel(), ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                scrollPane.setMinimumSize(new Dimension(800, 500));
+                scrollPane.setBorder(new EmptyBorder(0,0,0,0));
+                swingNode.setContent(scrollPane);
                 container.getTop().setVisible(false);
                 System.out.println("MENU GUI INITIALIZED");
 

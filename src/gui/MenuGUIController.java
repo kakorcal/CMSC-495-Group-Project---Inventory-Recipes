@@ -32,7 +32,7 @@ public class MenuGUIController {
             public void run() {
                 MenuGUI gui = new MenuGUI();
                 gui.setMainPanelLayout();
-                JScrollPane scrollPane = new JScrollPane(gui.getMainPanel(), ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                JScrollPane scrollPane = new JScrollPane(gui.getMainPanel(), ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
                 scrollPane.setMinimumSize(new Dimension(800, 500));
                 scrollPane.setBorder(new EmptyBorder(0,0,0,0));
                 swingNode.setContent(scrollPane);

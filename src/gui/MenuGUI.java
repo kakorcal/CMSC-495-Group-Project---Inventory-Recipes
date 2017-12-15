@@ -3,7 +3,9 @@ package gui;
 import api.Message;
 import api.RecipeObject;
 import database.*;
+import javafx.embed.swing.JFXPanel;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -198,7 +200,8 @@ public class MenuGUI {
             tp.addTab(s1 + s3, main1 = new JPanel());
             main1.setBorder(new TitledBorder(s1 + s3));
             main1.add(bp1);
-            sub1.setLayout(new GridLayout(5, 5, 5, 5));
+            main1.setLayout(new BoxLayout(main1, BoxLayout.Y_AXIS));
+            sub1.setLayout(new GridLayout(10, 1, 5, 5));
             main1.add(sub1);
             //SecondTab
             tp.addTab(s2 + s3, main2 = new JPanel());
@@ -278,12 +281,27 @@ public class MenuGUI {
             this.add(b);
         }
 
+        public ButtonPanel(String inventory, int quantity) {
+            JButton updateButton = new JButton("Update");
+            JTextField updateInventoryField = new JTextField(8);
+            JLabel inventoryLabel = new JLabel(inventory);
+            JSpinner updateSpinner = new JSpinner();
+            updateSpinner.setValue(quantity);
+            setLayout(new FlowLayout());
+            updateSpinner.setPreferredSize(new Dimension(80, 20));
+            this.add(inventoryLabel);
+            this.add(updateSpinner);
+            this.add(updateInventoryField);
+            this.add(updateButton);
+        }
+
         private void addFunction() {
             b.addActionListener(
                     new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
                             System.out.println("ADD INVENTORY BUTTON CLICKED");
-                            sub1.add(new JButton("hello"));
+                            sub1.add(new ButtonPanel("hello", 2));
+                            sub1.revalidate();
                         }
                     });
         }

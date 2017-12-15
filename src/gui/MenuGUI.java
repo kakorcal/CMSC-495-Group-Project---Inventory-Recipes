@@ -3,7 +3,10 @@ package gui;
 import api.Message;
 import api.RecipeObject;
 import database.*;
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -21,27 +24,16 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Scanner;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 public class MenuGUI {
     //--Fields-----------------------------------//
-    private JFrame f;
+    private JPanel f;
     private JLabel l;
     private JTabbedPane tp;
     private JOptionPane op;
@@ -52,7 +44,7 @@ public class MenuGUI {
     private String s3 = "Menu ";
     private String s4 = " ";
     private String s5 = "\n";
-    private String[] ar = {"Update", "Add item to inventory: "};
+    private String[] ar = {"Add", "Add item to inventory: "};
     private ArrayList<RecipeObject> input, menu;
     private ArrayList<CheckPanel> cpa;
     private ArrayList<SpinnerPanel> spa;
@@ -68,28 +60,76 @@ public class MenuGUI {
     private MenuTransaction menuTransaction = null;
     private MenuItemTransaction menuItemTransaction = null;
 
-    public MenuGUI(String s) {
-        f = new JFrame(s);
-        l = new JLabel("Menu Selections");
-        tp = new JTabbedPane();
-        op = new JOptionPane();
-        bp1 = new ButtonPanel(ar, 8);
-        cpa = new ArrayList<>();
-        spa = new ArrayList<>();
-        jpa = new ArrayList<>();
-        sub1 = new JPanel();
-        sub2 = new JPanel();
-        sub3 = new JPanel();
-        recipeSet = new ButtonSet("Generate Recipes", "Generate Menu",
-                "Clear Selections");
-        menuSet = new ButtonSet("Rename Menu", "Save Menu", "Print Menu");
-        setTabs();
-        try {
-            setAction();
-        } catch (Exception e) {
-            e.printStackTrace();
+    public JPanel getMainPanel() {
+        return f;
+    }
+
+    public void setMainPanelLayout() {
+        f.setLayout(new BoxLayout(f, BoxLayout.Y_AXIS));
+    }
+
+    public MenuGUI() {
+        if(initializeTransactions()) {
+            f = new JPanel();
+            l = new JLabel("Menu Selections");
+            tp = new JTabbedPane();
+            op = new JOptionPane();
+            bp1 = new ButtonPanel(ar, 8);
+            cpa = new ArrayList<>();
+            spa = new ArrayList<>();
+            jpa = new ArrayList<>();
+            sub1 = new JPanel();
+            sub2 = new JPanel();
+            sub3 = new JPanel();
+            recipeSet = new ButtonSet("Generate Recipes", "Generate Menu",
+                    "Clear Selections");
+            menuSet = new ButtonSet("Rename Menu", "Save Menu", "Print Menu");
+            setTabs();
+            try {
+                setAction();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }else {
+            main1.add(new JLabel("Failed to retrieve user data."));
         }
-        runWindow();
+    }
+
+    private Boolean initializeTransactions() {
+        RestaurantApp app = RestaurantApp.getInstance();
+        manager = app.getSessionManager();
+        userTransaction = app.getUserTransaction();
+        user = app.getUser();
+        inventoryTransaction = app.getInventoryTransaction();
+        recipeTransaction = app.getRecipeTransaction();
+        menuTransaction = app.getMenuTransaction();
+        menuItemTransaction = app.getMenuItemTransaction();
+
+        if(userTransaction == null || user == null) {
+            return false;
+        }
+
+        if(inventoryTransaction == null) {
+            app.setInventoryTransaction(new InventoryTransaction(manager, user));
+            inventoryTransaction = app.getInventoryTransaction();
+        }
+
+        if(recipeTransaction == null) {
+            app.setRecipeTransaction(new RecipeTransaction(manager, user));
+            recipeTransaction = app.getRecipeTransaction();
+        }
+
+        if(menuTransaction == null) {
+            app.setMenuTransaction(new MenuTransaction(manager, user));
+            menuTransaction = app.getMenuTransaction();
+        }
+
+        if(menuItemTransaction == null) {
+            app.setMenuItemTransaction(new MenuItemTransaction(manager, user));
+            menuItemTransaction = app.getMenuItemTransaction();
+        }
+        
+        return true;
     }
 
     synchronized public void addArray(ArrayList al, JComponent jc) {
@@ -112,6 +152,7 @@ public class MenuGUI {
         recipeSet.addFunction(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
+                        System.out.println("RECIPE SET ACTION PERFORMED");
                         //cpa.get(0).setWords("This occured");
                         setAllFalse();
                     }
@@ -121,6 +162,8 @@ public class MenuGUI {
             Message m = new Message();
 
             public void actionPerformed(ActionEvent ae) {
+                System.out.println("MENU SET ACTION PERFORMED");
+
                 try {
                     output = new BufferedWriter(new FileWriter("Menu.txt"));
                     Scanner scan = new Scanner("");
@@ -159,7 +202,9 @@ public class MenuGUI {
             tp.addTab(s1 + s3, main1 = new JPanel());
             main1.setBorder(new TitledBorder(s1 + s3));
             main1.add(bp1);
-            sub1.setLayout(new GridLayout(5, 5, 5, 5));
+            main1.setLayout(new BoxLayout(main1, BoxLayout.Y_AXIS));
+            sub1.setLayout(new GridLayout(10, 1, 5, 5));
+            getInventory(sub1);
             main1.add(sub1);
             //SecondTab
             tp.addTab(s2 + s3, main2 = new JPanel());
@@ -176,6 +221,22 @@ public class MenuGUI {
             f.add(tp);
         }
 
+        private void getInventory(JComponent container) {
+            List<Inventory> inventories = inventoryTransaction.list();
+
+            if(inventoryTransaction.getError().hasError()) {
+                Platform.runLater(() -> {
+                    new Message().showMessage("Error", null, inventoryTransaction.getError().getMessage(), Alert.AlertType.WARNING);
+                });
+            }else {
+                for(Inventory inventory: inventories) {
+                    ButtonPanel inventoryPanel = new ButtonPanel(inventory.getId(), inventory.getName(), inventory.getQuantity());
+                    container.add(inventoryPanel);
+                }
+            }
+
+        }
+
         public void setMenuTitle (String s1){
             l.setText(s1);
         }
@@ -183,18 +244,6 @@ public class MenuGUI {
         public void postText (String s){
             op.showMessageDialog(op, s);
         }
-
-        private void runWindow () {
-            f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            f.setLocation(400, 200);
-            f.setSize(800, 500);
-            f.setVisible(true);
-        }
-
-        public static void main (String[]scarf) throws Exception {
-            Menu built = new Menu("Title");
-        }
-    }
 
     class ScrollPanel extends JPanel {
         private JScrollPane sp;
@@ -238,6 +287,7 @@ public class MenuGUI {
         public ButtonPanel(String[] sa, int i) {
 
             b = new JButton(sa[0]);
+            addFunction();
             tf = new JTextField(i);
             l = new JLabel(sa[1]);
             s = new JSpinner();
@@ -250,10 +300,126 @@ public class MenuGUI {
             this.add(b);
         }
 
+        public ButtonPanel(long id, String inventory, int quantity) {
+            JButton updateButton = new JButton("Update");
+            JButton deleteButton = new JButton("Delete");
+            JTextField inventoryId = new JTextField(Long.toString(id));
+            JTextField inventoryName = new JTextField(inventory);
+            JTextField inventoryQuantity = new JTextField(Integer.toString(quantity));
+            JTextField updateInventoryField = new JTextField(inventory, 6);
+            JSpinner updateSpinner = new JSpinner();
+            updateSpinner.setValue(quantity);
+            setLayout(new FlowLayout());
+            updateSpinner.setPreferredSize(new Dimension(80, 20));
+            ButtonPanel self = this;
+
+            updateButton.addActionListener(
+                    new ActionListener() {
+                        public void actionPerformed(ActionEvent e) {
+                            System.out.println("UPDATE INVENTORY BUTTON CLICKED");
+                            int quantity = -1;
+
+                            try {
+                                quantity = Integer.parseInt("" + updateSpinner.getValue());
+                            }catch (Exception err) {
+                                Platform.runLater(() -> {
+                                    new Message().showMessage("Error", "Invalid quantity", "Please enter a valid integer.", Alert.AlertType.WARNING);
+                                });
+                            }
+
+                            if(quantity >= 0) {
+                                String name = updateInventoryField.getText();
+                                Inventory inventory = new Inventory(id, name, quantity);
+                                Inventory newInventory = inventoryTransaction.update(inventory);
+
+                                if(inventoryTransaction.getError().hasError()) {
+                                    updateInventoryField.setText(inventoryName.getText());
+                                    updateSpinner.setValue(updateSpinner.getValue());
+                                    Platform.runLater(() -> {
+                                        new Message().showMessage("Error", null, inventoryTransaction.getError().getMessage(), Alert.AlertType.WARNING);
+                                    });
+                                }else {
+                                    updateInventoryField.setText(newInventory.getName());
+                                    updateSpinner.setValue(newInventory.getQuantity());
+                                    inventoryName.setText(newInventory.getName());
+                                    inventoryQuantity.setText(Integer.toString(newInventory.getQuantity()));
+                                    sub1.revalidate();
+                                    Platform.runLater(() -> {
+                                        new Message().showMessage("Success", null, "Successfully updated inventory.", Alert.AlertType.INFORMATION);
+                                    });
+                                }
+                            }
+                        }
+                    });
+
+            deleteButton.addActionListener(
+                    new ActionListener() {
+                        public void actionPerformed(ActionEvent e) {
+                            System.out.println("DELETE INVENTORY BUTTON CLICKED");
+
+                            inventoryTransaction.delete(id);
+
+                            if(inventoryTransaction.getError().hasError()) {
+                                Platform.runLater(() -> {
+                                    new Message().showMessage("Error", null, inventoryTransaction.getError().getMessage(), Alert.AlertType.WARNING);
+                                });
+                            }else {
+                                sub1.remove(self);
+                                sub1.revalidate();
+                                Platform.runLater(() -> {
+                                    new Message().showMessage("Success", null, "Successfully deleted inventory.", Alert.AlertType.INFORMATION);
+                                });
+                            }
+
+
+                            sub1.revalidate();
+                        }
+                    });
+
+            this.add(inventoryId);
+            this.add(inventoryName);
+            this.add(inventoryQuantity);
+            inventoryId.setVisible(false);
+            inventoryName.setVisible(false);
+            inventoryQuantity.setVisible(false);
+            this.add(updateSpinner);
+            this.add(updateInventoryField);
+            this.add(updateButton);
+            this.add(deleteButton);
+        }
+
         private void addFunction() {
             b.addActionListener(
                     new ActionListener() {
                         public void actionPerformed(ActionEvent e) {
+                            System.out.println("ADD INVENTORY BUTTON CLICKED");
+                            int quantity = -1;
+
+                            try {
+                                quantity = Integer.parseInt("" + s.getValue());
+                            }catch (Exception err) {
+                                Platform.runLater(() -> {
+                                    new Message().showMessage("Error", "Invalid quantity", "Please enter a valid integer.", Alert.AlertType.WARNING);
+                                });
+                            }
+
+                            if(quantity >= 0) {
+                                String name = tf.getText();
+                                Inventory inventory = new Inventory(name, quantity);
+                                Inventory newInventory = inventoryTransaction.create(inventory);
+
+                                if(inventoryTransaction.getError().hasError()) {
+                                    Platform.runLater(() -> {
+                                        new Message().showMessage("Error", null, inventoryTransaction.getError().getMessage(), Alert.AlertType.WARNING);
+                                    });
+                                }else {
+                                    sub1.add(new ButtonPanel(newInventory.getId(), newInventory.getName(), newInventory.getQuantity()));
+                                    sub1.revalidate();
+                                    Platform.runLater(() -> {
+                                        new Message().showMessage("Success", null, "Successfully created inventory.", Alert.AlertType.INFORMATION);
+                                    });
+                                }
+                            }
                         }
                     });
         }
@@ -283,6 +449,7 @@ public class MenuGUI {
             cb.addChangeListener(
                     new ChangeListener() {
                         public void stateChanged(ChangeEvent ce) {
+                            System.out.println("CHECK BOX CLICKED");
                             if (cb.isSelected()) {
                                 flipGray();
                                 changed = true;
@@ -316,7 +483,6 @@ public class MenuGUI {
     }
 
     class SpinnerPanel extends JPanel {
-        ;
         private JLabel l;
         private JSpinner s;
         Boolean changed;
@@ -337,6 +503,7 @@ public class MenuGUI {
             s.addChangeListener(
                     new ChangeListener() {
                         public void stateChanged(ChangeEvent ce) {
+                            System.out.println("SPINNING STATE CHANGED.");
                             if ((int) s.getValue() != initial) {
                                 changed = true;
                             }
@@ -364,6 +531,10 @@ public class MenuGUI {
             b1 = new JButton(s1);
             b2 = new JButton(s2);
             b3 = new JButton(s3);
+            System.out.println("ADDING EVENT LISTENERS TO THE FOLLOWING");
+            System.out.println(s1);
+            System.out.println(s2);
+            System.out.println(s3);
             this.add(b1);
             this.add(b2);
             this.add(b3);
@@ -383,3 +554,5 @@ public class MenuGUI {
             }
         }
     }
+
+}

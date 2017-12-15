@@ -1,8 +1,10 @@
 package gui;
 
+import api.RecipeObject;
 import database.SessionManager;
 import database.User;
 import database.UserTransaction;
+import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,8 +12,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
 
 public class AuthFormController {
     @FXML private Text errorMessage;
@@ -58,9 +65,10 @@ public class AuthFormController {
             app.setUser(user);
 
             Stage primaryStage = (Stage) usernameField.getScene().getWindow();
-            // NOTE TO ROSS/DUSTIN/ALEX: you change the scene to your GUI by replacing "/api/recipeChooser.fxml"
-            Parent recipeChooser = FXMLLoader.load(getClass().getResource("/api/recipeChooser.fxml"));
-            primaryStage.setScene(new Scene(recipeChooser));
+            Parent menuGUI = FXMLLoader.load(getClass().getResource("/gui/menuGUI.fxml"));
+            primaryStage.setScene(new Scene(menuGUI));
+            primaryStage.centerOnScreen();
+            primaryStage.setTitle("Restaurant Management Application");
         }
     }
 
@@ -103,9 +111,10 @@ public class AuthFormController {
             app.setUser(user);
 
             Stage primaryStage = (Stage) usernameField.getScene().getWindow();
-            // NOTE TO ROSS: you change the scene to your GUI by replacing "/api/recipeChooser.fxml"
-            Parent recipeChooser = FXMLLoader.load(getClass().getResource("/api/recipeChooser.fxml"));
-            primaryStage.setScene(new Scene(recipeChooser));
+            Parent menuGUI = FXMLLoader.load(getClass().getResource("/gui/menuGUI.fxml"));
+            primaryStage.setScene(new Scene(menuGUI));
+            primaryStage.centerOnScreen();
+            primaryStage.setTitle("Restaurant Management Application");
         }
     }
 }

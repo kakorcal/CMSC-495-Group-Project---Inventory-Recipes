@@ -61,14 +61,14 @@ public class RecipeFinderController {
         inventoryTransaction.create(new Inventory("Bread", 2));
         inventoryTransaction.create(new Inventory("Eggs", 2));
         inventoryTransaction.create(new Inventory("Flour", 2));
-        //inventoryTransaction.create(new Inventory("Blood", 2));
-        //inventoryTransaction.create(new Inventory("Pumpkin", 2));
+        inventoryTransaction.create(new Inventory("Blood", 2));
+        inventoryTransaction.create(new Inventory("Pumpkin", 2));
         inventoryTransaction.create(new Inventory("Chicken", 2));
-        //inventoryTransaction.create(new Inventory("Steak", 2));
-//        inventoryTransaction.create(new Inventory("Potato", 2));
-//        inventoryTransaction.create(new Inventory("Rhino", 2));
-//        inventoryTransaction.create(new Inventory("Panda", 2));
-//        inventoryTransaction.create(new Inventory("Peanut Butter", 2));
+        inventoryTransaction.create(new Inventory("Steak", 2));
+        inventoryTransaction.create(new Inventory("Potato", 2));
+        inventoryTransaction.create(new Inventory("Rhino", 2));
+        inventoryTransaction.create(new Inventory("Panda", 2));
+        inventoryTransaction.create(new Inventory("Peanut Butter", 2));
 
         List<Inventory> inventoryList = inventoryTransaction.list();
 

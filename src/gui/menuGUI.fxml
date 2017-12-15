@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.text.Text?>
+<BorderPane fx:controller="gui.MenuGUIController"
+            xmlns:fx="http://javafx.com/fxml" fx:id="container">
+    <top>
+        <Text text="Loading Application. Please wait..." BorderPane.alignment="CENTER"
+              style="-fx-font-size: 17px; -fx-fill: #0aa970; -fx-translate-y: 20px;" fx:id="loadingMessage"/>
+    </top>
+    <center>
+        <Pane fx:id="menuPane" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="510" prefHeight="500">
+        </Pane>
+    </center>
+</BorderPane>

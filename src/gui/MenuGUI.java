@@ -41,7 +41,7 @@ import javax.swing.event.ChangeListener;
 
 public class MenuGUI {
     //--Fields-----------------------------------//
-    private JFrame f;
+    private JPanel f;
     private JLabel l;
     private JTabbedPane tp;
     private JOptionPane op;
@@ -68,8 +68,12 @@ public class MenuGUI {
     private MenuTransaction menuTransaction = null;
     private MenuItemTransaction menuItemTransaction = null;
 
-    public MenuGUI(String s) {
-        f = new JFrame(s);
+    public JPanel getMainPanel() {
+        return f;
+    }
+
+    public MenuGUI() {
+        f = new JPanel();
         l = new JLabel("Menu Selections");
         tp = new JTabbedPane();
         op = new JOptionPane();
@@ -89,7 +93,7 @@ public class MenuGUI {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        runWindow();
+//        runWindow();
     }
 
     synchronized public void addArray(ArrayList al, JComponent jc) {
@@ -184,12 +188,12 @@ public class MenuGUI {
             op.showMessageDialog(op, s);
         }
 
-        private void runWindow () {
-            f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            f.setLocation(400, 200);
-            f.setSize(800, 500);
-            f.setVisible(true);
-        }
+//        private void runWindow () {
+//            f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//            f.setLocation(400, 200);
+//            f.setSize(800, 500);
+//            f.setVisible(true);
+//        }
 
         public static void main (String[]scarf) throws Exception {
             Menu built = new Menu("Title");

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class generateMenu extends JFrame{
+public class generateMenu extends RecipeFinderController {
 
     JFrame menuFrame = new JFrame();
     JPanel tempPanel;

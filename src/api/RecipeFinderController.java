@@ -1,6 +1,7 @@
 package api;
 
 import database.*;
+import gui.MenuGUI;
 import gui.RestaurantApp;
 import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXML;
@@ -25,7 +26,7 @@ import java.util.List;
  * Controller for GUI.
  *
  */
-public class RecipeFinderController {
+public class RecipeFinderController extends MenuGUI {
 
     private generateMenu myMenu;
 

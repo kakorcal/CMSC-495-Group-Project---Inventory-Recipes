@@ -1,5 +1,7 @@
 package database;
 
+import gui.AuthFormController;
+import gui.MenuGUI;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -8,7 +10,7 @@ import org.hibernate.query.Query;
 
 import java.util.List;
 
-public class InventoryTransaction {
+public class InventoryTransaction extends MenuGUI {
     private SessionFactory sessionFactory;
     private User user;
     private ErrorHandler error;

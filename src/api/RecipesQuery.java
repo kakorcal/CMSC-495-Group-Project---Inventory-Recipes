@@ -20,7 +20,7 @@ import java.util.ArrayList;
  * Date: 11/06/2017
  * Description: Queries the Recipe Website based on the URL that was generated and passed in
  */
-public class RecipesQuery {
+public class RecipesQuery extends RecipeFinderController {
 
     Message message = new Message();
 

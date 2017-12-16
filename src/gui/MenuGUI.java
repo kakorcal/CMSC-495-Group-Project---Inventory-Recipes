@@ -41,7 +41,7 @@ import java.nio.file.Paths;
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.CREATE;
 
-public class MenuGUI {
+public class MenuGUI extends AuthFormController {
     //--Fields-----------------------------------//
     private JPanel f;
     private JLabel l;

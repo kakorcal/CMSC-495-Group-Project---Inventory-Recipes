@@ -1,5 +1,6 @@
 package database;
 
+import gui.AuthFormController;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -9,7 +10,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.List;
 
-public class UserTransaction {
+public class UserTransaction extends AuthFormController {
     private SessionFactory sessionFactory;
     private ErrorHandler error;
     private static final int SALT_WORK_FACTOR = 10;

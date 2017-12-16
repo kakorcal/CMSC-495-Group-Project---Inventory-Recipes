@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.util.List;
 import java.util.Properties;
 
+import gui.RestaurantApp;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -42,7 +43,7 @@ import org.hibernate.service.ServiceRegistry;
  *
  * 5. the connection is successful if the GUI appears with no errors
  * */
-public class SessionManager {
+public class SessionManager extends RestaurantApp {
 
     private SessionFactory sessionFactory;
 

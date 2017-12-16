@@ -20,7 +20,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class AuthFormController {
+public class AuthFormController extends RestaurantApp {
     @FXML private Text errorMessage;
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;

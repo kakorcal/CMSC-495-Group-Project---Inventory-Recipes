@@ -11,20 +11,18 @@ import java.awt.*;
  */
 public class RecipeObject {
 
-    private String recipeTitle, recipeURL, recipeID, recipeImageURL;
+    private String recipeTitle, recipeID, recipeImageURL;
     private JCheckBox checkBox;
 
     /**
      * Constructor for Recipe Object
      * @param recipeTitle
      * @param recipeID
-     * @param recipeURL
      * @param recipeImageURL
      */
-    public RecipeObject(String recipeTitle, String recipeID, String recipeURL, String recipeImageURL){
+    public RecipeObject(String recipeTitle, String recipeID, String recipeImageURL){
         this.recipeTitle = recipeTitle;
         this.recipeID = recipeID;
-        this.recipeURL = recipeURL;
         this.recipeImageURL = recipeImageURL;
         this.checkBox = new JCheckBox();
     }
@@ -46,10 +44,6 @@ public class RecipeObject {
 
     public String getRecipeTitle() {
         return recipeTitle;
-    }
-
-    public String getRecipeURL() {
-        return recipeURL;
     }
 
     public String getRecipeID() {

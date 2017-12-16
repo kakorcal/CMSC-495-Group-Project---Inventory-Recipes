@@ -5,8 +5,12 @@ import api.RecipeObject;
 import database.*;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.layout.Pane;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -157,6 +161,16 @@ public class MenuGUI {
     }
 
     synchronized public void setAction() throws Exception {
+
+        recipeSet.addFunction(
+                new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        System.out.println("No idea what's going on...");
+                        //cpa.get(0).setWords("This occured");
+                        setAllFalse();
+                    }
+                }, 2);
+
         recipeSet.addFunction(
                 new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -203,11 +217,23 @@ public class MenuGUI {
             getInventory(sub1);
             main1.add(sub1);
             //SecondTab
-            tp.addTab(s2 + s3, main2 = new JPanel());
-            main2.setBorder(new TitledBorder(s2 + s3));
-            sub2.setLayout(new GridLayout(2, 10));
-            main2.add(recipeSet);
-            main2.add(sub2);
+
+            tp.addTab(s2 + s3, main2 = new JPanel());//main2 = new JPanel());
+            try {
+                Parent root = FXMLLoader.load(getClass().getResource("/api/recipeChooser.fxml"));
+                //Pane recipePane = FXMLLoader.load(getClass().getResource("/api/recipeChooser.fxml"));
+                Scene scene = new Scene(root);
+                //primaryStage.show();
+                JFXPanel fxPanel = new JFXPanel();
+                fxPanel.setScene(scene);
+                main2.add(fxPanel);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            //main2.setBorder(new TitledBorder(s2 + s3));
+            //sub2.setLayout(new GridLayout(2, 10));
+            //main2.add(recipeSet);
+            //main2.add(sub2);
             //ThirdTab
             tp.addTab(s3 + s3, main3 = new JPanel());
             main3.setLayout(new GridLayout(2, 3));

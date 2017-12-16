@@ -1,5 +1,6 @@
 package api;
 
+import javafx.scene.control.Alert;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,11 +38,16 @@ public class RecipesQuery {
             //Make request to website and pull in the resulting JSON
             jsonResponse = makeHttpRequest(url);
 
+            if(jsonResponse.isEmpty()){
+                new Message().showMessage("No Response", "No Recipes for Ingredients", "No recipes based on ingredients provided", Alert.AlertType.INFORMATION);
+                return null;
+            }
+
             //Assign Overall JSON Object (for details on the returned JSON, view JSON Parser with given URL)
             JSONObject recipeResponses = new JSONObject(jsonResponse);
 
             //Assign JSON Array, which contains all recipes
-            JSONArray recipeArrays = recipeResponses.getJSONArray("recipes");
+            JSONArray recipeArrays = recipeResponses.getJSONArray("matches");
 
             /*
               Right now, I'm only looking over the first ten Recipes.
@@ -52,19 +58,24 @@ public class RecipesQuery {
                 JSONObject recipeJSONSample = recipeArrays.getJSONObject(i);
 
                 //Assign Recipe Title
-                String recipeTitle = recipeJSONSample.getString("title");
+                String recipeTitle = recipeJSONSample.getString("recipeName");
 
                 //Assign Recipe ID for doing queries later on
-                String recipeID = recipeJSONSample.getString("recipe_id");
+                String recipeID = recipeJSONSample.getString("id");
 
                 //Assign Recipe URL
-                String recipeURL = recipeJSONSample.getString("source_url");
+                //String recipeURL = recipeJSONSample.getString("source_url");
 
+                String recipeImageURL;
                 //Assign Recipe "image" URL, in case we want to use it later
-                String recipeImageURL = recipeJSONSample.getString("image_url");
+                if(recipeJSONSample.has("imageUrlsBySize")){
+                    recipeImageURL = recipeJSONSample.getString("imageUrlsBySize");
+                } else {
+                    recipeImageURL = "";
+                }
 
                 //Create our custom RecipeObject based on the items created
-                recipes.add(new RecipeObject(recipeTitle, recipeID, recipeURL, recipeImageURL));
+                recipes.add(new RecipeObject(recipeTitle, recipeID, recipeImageURL));
             }
         } catch (JSONException | IOException e) {
             e.printStackTrace();
@@ -72,6 +83,37 @@ public class RecipesQuery {
 
         //Return our ArrayList of custom Recipe Objects
         return recipes;
+    }
+
+    public static String extractDirectionsURL(String requestUrl){
+        String directionsURL = "";
+        URL url = createUrl(requestUrl);  //Create URL Based off of generated String
+        String jsonResponse = null;
+
+        try{
+            //Make request to website and pull in the resulting JSON
+            jsonResponse = makeHttpRequest(url);
+
+            if(jsonResponse.isEmpty()){
+                new Message().showMessage("No Response for Directions", "No Directions for Recipe", "No directions for one of your recipes", Alert.AlertType.INFORMATION);
+                return null;
+            }
+
+            //Assign Overall JSON Object (for details on the returned JSON, view JSON Parser with given URL)
+            JSONObject recipeResponses = new JSONObject(jsonResponse);
+
+            //Assign JSON Source Object, which contains all URL's for the source directions
+            JSONObject sourceObject = recipeResponses.getJSONObject("source");
+
+            //Get Source URL
+            directionsURL = sourceObject.getString("sourceRecipeUrl");
+
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+        }
+
+
+        return directionsURL;
     }
 
     /**

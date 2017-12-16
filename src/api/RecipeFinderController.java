@@ -1,9 +1,6 @@
 package api;
 
-import database.Inventory;
-import database.InventoryTransaction;
-import database.SessionManager;
-import database.UserTransaction;
+import database.*;
 import gui.RestaurantApp;
 import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXML;
@@ -38,8 +35,10 @@ public class RecipeFinderController {
     @FXML
     private Pane recipePane;
 
-    Message message = new Message();
-    ArrayList<RecipeObject> recipes;
+    private Message message = new Message();
+    private ArrayList<RecipeObject> recipes;
+    private final String APP_ID = "342f012e&";
+    private final String APP_KEY = "759ed5ecf4b779bded17abc45600d7e8&";
 
     /**
      * findRecipes()
@@ -55,20 +54,13 @@ public class RecipeFinderController {
         // 1. get the RestaurantApp singleton
         RestaurantApp app = RestaurantApp.getInstance();
 
-        InventoryTransaction inventoryTransaction = new InventoryTransaction(app.getSessionManager(), app.getUser());
+        SessionManager sessionManager = app.getSessionManager();
+        User user = app.getUser();
+        if(sessionManager == null || user == null){
+            message.showMessage("Unknown User", "User Unknown", "Unknown User.  Try to log back in", Alert.AlertType.ERROR);
+        }
 
-        inventoryTransaction.create(new Inventory("Milk", 2));
-        inventoryTransaction.create(new Inventory("Bread", 2));
-        inventoryTransaction.create(new Inventory("Eggs", 2));
-        inventoryTransaction.create(new Inventory("Flour", 2));
-        inventoryTransaction.create(new Inventory("Blood", 2));
-        inventoryTransaction.create(new Inventory("Pumpkin", 2));
-        inventoryTransaction.create(new Inventory("Chicken", 2));
-        inventoryTransaction.create(new Inventory("Steak", 2));
-        inventoryTransaction.create(new Inventory("Potato", 2));
-        inventoryTransaction.create(new Inventory("Rhino", 2));
-        inventoryTransaction.create(new Inventory("Panda", 2));
-        inventoryTransaction.create(new Inventory("Peanut Butter", 2));
+        InventoryTransaction inventoryTransaction = new InventoryTransaction(app.getSessionManager(), app.getUser());
 
         List<Inventory> inventoryList = inventoryTransaction.list();
 
@@ -80,20 +72,20 @@ public class RecipeFinderController {
         //Else, build List of Recipe's based off of database
         else
         {
-            String recipeURL = "https://food2fork.com/api/search?key=304840c6b26d5a8c28da4ff2661b8e85&q=";
+            String searchRecipeURL = "https://api.yummly.com/v1/api/recipes?_app_id="+APP_ID+"_app_key="+APP_KEY+"q=";
             StringBuilder ingredients = new StringBuilder();
             for (int i = 0; i < inventoryList.size(); i++) {
                 if(i==0) {
                     ingredients = new StringBuilder(inventoryList.get(i).getName());
                 } else {
-                    ingredients.append(",").append(inventoryList.get(i).getName());
+                    ingredients.append("+").append(inventoryList.get(i).getName());
                 }
             }
-            recipeURL += ingredients;
+            searchRecipeURL += ingredients;
 
             //Send up the recipeURL!
-            recipes = RecipesQuery.extractRecipes(recipeURL);
-            System.out.println("Passing in RecipeURL: " + recipeURL);
+            recipes = RecipesQuery.extractRecipes(searchRecipeURL);
+            System.out.println("Passing in RecipeURL: " + searchRecipeURL);
 
             //Ensure Recipes were returned
              if (recipes.size() <= 0) {
@@ -129,15 +121,22 @@ public class RecipeFinderController {
         //Pull in the Recipes from our ArrayList RecipeList
         for(int i = 0; i<recipes.size(); i++){
             if(recipes.get(i).isCheckBoxChecked()) {
+                //For each Box that is checked, we need to make a separate RecipeID request
+                String getRecipeURL = "https://api.yummly.com/v1/api/recipe/"+recipes.get(i).getRecipeID()+"?_app_id="+APP_ID+"_app_key="+APP_KEY;
+
+                //Send up the getRecipeURL
+                System.out.println("Passing in RecipeURL: " + getRecipeURL);
+                String directionsURL = RecipesQuery.extractDirectionsURL(getRecipeURL);
+
                 if(Desktop.isDesktopSupported()){
                     try {
-                        Desktop.getDesktop().browse(new URI(recipes.get(i).getRecipeURL()));
+                        Desktop.getDesktop().browse(new URI(directionsURL));
                     } catch (IOException | URISyntaxException e) {
                         e.printStackTrace();
                     }
                 } else{
                     message.showMessage("Error", "Unable to Open Browser",
-                            "Your Operating System is not supported.  Please browse to the following website to view the directions" + recipes.get(i).getRecipeURL(),
+                            "Your Operating System is not supported.  Please browse to the following website to view the directions" + directionsURL,
                             Alert.AlertType.INFORMATION);
                 }
             }
